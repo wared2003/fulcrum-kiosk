@@ -1,0 +1,32 @@
+# IDE - Android Studio / IntelliJ
+.idea/
+*.iml
+.gradle/
+local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+cmake-build-*/
+
+# Build output
+**/build/
+
+# Kotlin
+/build/
+*.pyc
+
+# Android Signature & Secrets
+*.jks
+*.keystore
+*.p12
+google-services.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+.kotlin
+
+# Secrets spécifiques au projet
+# (Si tu stockes des clés NATS ou Tailscale en local)
+secrets.xml
