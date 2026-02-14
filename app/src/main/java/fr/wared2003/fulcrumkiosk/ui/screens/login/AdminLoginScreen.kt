@@ -1,36 +1,42 @@
-package fr.wared2003.fulcrumkiosk.ui.screens
+package fr.wared2003.fulcrumkiosk.ui.screens.login
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import fr.wared2003.fulcrumkiosk.data.VaultManager
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun AdminLoginScreen(
-    vaultManager: VaultManager,
-    onAccessGranted: () -> Unit
-) {
-    var pinInput by remember { mutableStateOf("") }
-    var isError by remember { mutableStateOf(false) }
+fun AdminLoginScreen(viewModel: AdminLoginViewModel = koinViewModel()) {
+    val state by viewModel.state.collectAsState()
 
-    val correctPin = vaultManager.getAdminPin()
-    val isDefault = vaultManager.isDefaultPin()
-
-    // Surface uses the background color defined in your Theme.kt
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -39,22 +45,19 @@ fun AdminLoginScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(24.dp)
-                .verticalScroll(rememberScrollState()), // Responsive for smaller screens or landscape
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-
-            // --- Visual Icon ---
             Icon(
                 imageVector = Icons.Filled.Lock,
-                contentDescription = "Security Icon", // Important for accessibility
+                contentDescription = "Security Icon",
                 modifier = Modifier.size(64.dp),
                 tint = MaterialTheme.colorScheme.primary
             )
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // --- Header Section ---
             Text(
                 text = "Admin Access",
                 style = MaterialTheme.typography.headlineLarge.copy(
@@ -72,26 +75,23 @@ fun AdminLoginScreen(
 
             Spacer(modifier = Modifier.height(48.dp))
 
-            // --- Form Container (Responsive width) ---
             Column(
                 modifier = Modifier.widthIn(max = 400.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 OutlinedTextField(
-                    value = pinInput,
-                    onValueChange = {
-                        // Allow only digits and limit length if needed
-                        if (it.all { char -> char.isDigit() }) {
-                            pinInput = it
+                    value = state.pin,
+                    onValueChange = { pin ->
+                        if (pin.all { it.isDigit() }) {
+                            viewModel.onEvent(AdminLoginEvent.OnPinChange(pin))
                         }
-                        isError = false
                     },
                     label = { Text("PIN Code") },
-                    isError = isError,
+                    isError = state.isError,
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp), // Modern M3 rounded corners
+                    shape = RoundedCornerShape(12.dp),
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MaterialTheme.colorScheme.primary,
@@ -99,17 +99,16 @@ fun AdminLoginScreen(
                     )
                 )
 
-                // --- Error / Hint Messages ---
-                if (isError) {
+                if (state.isError) {
                     Text(
                         text = "Invalid PIN code. Please try again.",
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.labelMedium,
                         modifier = Modifier.padding(top = 8.dp, start = 4.dp)
                     )
-                } else if (isDefault) {
+                } else if (state.isDefaultPinHintVisible) {
                     Text(
-                        text = "Hint: Default PIN is $correctPin",
+                        text = "Hint: Default PIN is ${state.defaultPin}",
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.secondary,
                         modifier = Modifier.padding(top = 8.dp)
@@ -118,17 +117,9 @@ fun AdminLoginScreen(
 
                 Spacer(modifier = Modifier.height(40.dp))
 
-                // --- Action Button (M3 Filled Button) ---
                 Button(
-                    onClick = {
-                        if (pinInput == correctPin) {
-                            onAccessGranted()
-                        } else {
-                            isError = true
-                        }
-                    },
-                    // The button is enabled only when the user has entered at least 4 digits.
-                    enabled = pinInput.length >= 4,
+                    onClick = { viewModel.onEvent(AdminLoginEvent.OnLoginClick) },
+                    enabled = state.pin.length >= 4,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
@@ -136,7 +127,6 @@ fun AdminLoginScreen(
                 ) {
                     Text(
                         text = "Unlock Settings",
-                        // Using a standard M3 typography style for buttons
                         style = MaterialTheme.typography.labelLarge
                     )
                 }

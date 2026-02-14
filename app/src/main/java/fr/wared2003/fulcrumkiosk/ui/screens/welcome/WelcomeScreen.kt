@@ -1,4 +1,4 @@
-package fr.wared2003.fulcrumkiosk.ui.screens
+package fr.wared2003.fulcrumkiosk.ui.screens.welcome
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -10,9 +10,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.koin.androidx.compose.koinViewModel
 
+/**
+ * A composable that represents the Welcome screen, using the premium design
+ * and driven by a WelcomeViewModel.
+ */
 @Composable
-fun WelcomeScreen(onConfigureClick: () -> Unit) {
+fun WelcomeScreen(viewModel: WelcomeViewModel = koinViewModel()) {
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -24,7 +29,6 @@ fun WelcomeScreen(onConfigureClick: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically)
         ) {
-            // Brand Name
             Text(
                 text = "Fulcrum",
                 style = MaterialTheme.typography.displayMedium.copy(
@@ -34,7 +38,6 @@ fun WelcomeScreen(onConfigureClick: () -> Unit) {
                 )
             )
 
-            // Subtitle / Status
             Text(
                 text = "Kiosk system is ready to be initialized.",
                 style = MaterialTheme.typography.bodyLarge,
@@ -45,11 +48,10 @@ fun WelcomeScreen(onConfigureClick: () -> Unit) {
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Modern Action Button
             Button(
-                onClick = onConfigureClick,
+                onClick = { viewModel.onEvent(WelcomeEvent.OnConfigureClick) },
                 modifier = Modifier
-                    .widthIn(min = 200.dp, max = 400.dp) // Responsive width
+                    .widthIn(min = 200.dp, max = 400.dp)
                     .fillMaxWidth(0.7f)
                     .height(56.dp),
                 shape = RoundedCornerShape(16.dp)
