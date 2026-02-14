@@ -87,6 +87,9 @@ fun KioskScreen(
                             builtInZoomControls = false
                             useWideViewPort = true
                             loadWithOverviewMode = true
+                            val defaultUserAgent = settings.userAgentString
+                            val customUserAgent = defaultUserAgent.replace("; wv", "").replace("Version/\\d+\\.\\d+\\s".toRegex(), "")
+                            userAgentString = customUserAgent
                         }
 
                         webViewClient = object : WebViewClient() {
