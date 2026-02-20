@@ -99,7 +99,6 @@ class MainActivity : ComponentActivity() {
         try {
             if (dpm.isDeviceOwnerApp(packageName)) {
                 if (enable) {
-                    // Autorise l'app à se verrouiller elle-même
                     dpm.setLockTaskPackages(adminName, arrayOf(packageName))
                     startLockTask()
                     Log.d("Kiosk", "Mode LockTask (Device Owner) activé")

@@ -3,6 +3,7 @@ package fr.wared2003.fulcrumkiosk.data.local
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -14,13 +15,17 @@ import kotlinx.coroutines.flow.map
  *
  * @param context The application context.
  */
-class AppPreferences(private val context: Context) {
+class AppPreferences(
+    private val context: Context,
+    ) {
 
     // Expose a singleton instance of DataStore for the app.
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
     private object PreferencesKeys {
         val PWA_URL = stringPreferencesKey("pwa_url")
+        val IS_LOCK_ON = booleanPreferencesKey("is_lock_on")
+
     }
 
     /**
@@ -32,6 +37,13 @@ class AppPreferences(private val context: Context) {
         }
 
     /**
+     * A flow that emits the saved LockOnState whenever it changes.
+     */
+    val isLockOnState: Flow<Boolean> = context.dataStore.data
+        .map { preferences -> preferences[PreferencesKeys.IS_LOCK_ON ] == true }
+
+
+    /**
      * Persists the PWA URL.
      *
      * @param url The URL to save.
@@ -40,5 +52,16 @@ class AppPreferences(private val context: Context) {
         context.dataStore.edit { settings ->
             settings[PreferencesKeys.PWA_URL] = url
         }
+    }
+
+    /*
+     * Persists the lock state.
+     *
+     * @param isLockOn The lock state to save.
+     */
+    suspend fun saveIsLockOn(isLockOn: Boolean) {
+    context.dataStore.edit { settings ->
+        settings[PreferencesKeys.IS_LOCK_ON] = isLockOn
+    }
     }
 }

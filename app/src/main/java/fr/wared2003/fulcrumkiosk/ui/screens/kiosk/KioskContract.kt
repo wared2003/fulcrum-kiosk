@@ -4,6 +4,7 @@ data class KioskState(
     val url: String = "",
     val isLoading: Boolean = true,
     val error: String? = null,
+    val isLockOn: Boolean = false,
     val isFullScreen: Boolean = false,
 )
 

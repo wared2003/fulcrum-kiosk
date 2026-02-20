@@ -28,16 +28,19 @@ class KioskViewModel(
     private fun observeConfig() {
         viewModelScope.launch {
             repository.kioskConfig.collect { config ->
-                val urlNonNull = config.url ?: ""
+                val urlNonNull = config?.url ?: ""
                 if (urlNonNull.isEmpty()){
                     navManager.navigate(Screen.Welcome, popUpTo = Screen.Settings, inclusive = true)
                     return@collect
                 }
 
+                val isLockOn = config?.isLockOn
+
                 _state.update { it.copy(
                     url = urlNonNull,
                     isLoading = urlNonNull.isNotEmpty(),
-                    isFullScreen = true
+                    isFullScreen = true,
+                    isLockOn = isLockOn ?:false
                 ) }
             }
         }

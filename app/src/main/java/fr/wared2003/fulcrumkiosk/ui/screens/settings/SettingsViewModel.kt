@@ -8,6 +8,7 @@ import fr.wared2003.fulcrumkiosk.domain.usecase.ClearKioskPinUseCase
 import fr.wared2003.fulcrumkiosk.domain.usecase.GetKioskConfigUseCase
 import fr.wared2003.fulcrumkiosk.domain.usecase.SaveAdminPinUseCase
 import fr.wared2003.fulcrumkiosk.domain.usecase.SaveKioskPinUseCase
+import fr.wared2003.fulcrumkiosk.domain.usecase.SaveLockModeUseCase
 import fr.wared2003.fulcrumkiosk.domain.usecase.SavePwaUrlUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,7 +23,8 @@ class SettingsViewModel(
     private val navManager: NavManager,
     private val saveAdminPinUseCase: SaveAdminPinUseCase,
     private val saveKioskPinUseCase: SaveKioskPinUseCase,
-    private val ClearKioskPinUseCase: ClearKioskPinUseCase
+    private val ClearKioskPinUseCase: ClearKioskPinUseCase,
+    private val saveLockModeUseCase: SaveLockModeUseCase,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SettingsState())
@@ -35,7 +37,8 @@ class SettingsViewModel(
                     it.copy(
                         url = config.url ?: "",
                         isDefaultAdminPin = config.isDefaultAdminPin,
-                        isKioskPinSet = config.isKioskPinSet
+                        isKioskPinSet = config.isKioskPinSet,
+                        isLockOn = config.isLockOn
                     )
                 }
             }
@@ -85,6 +88,11 @@ class SettingsViewModel(
             }
             SettingsEvent.OnClearKioskPinClicked -> {
                 clearKioskPin()
+            }
+
+            //security
+            SettingsEvent.OnClickLockMode -> {
+                toggleLockMode()
             }
         }
     }
@@ -160,6 +168,16 @@ class SettingsViewModel(
                     kioskPinErrorMessage = null
                 )
             }
+        }
+    }
+
+    /**
+     *   toggle lock on kiosk mode (or pin if not owner mode)
+     */
+    fun toggleLockMode() {
+        viewModelScope.launch {
+            val isLockOn = !_state.value.isLockOn
+            saveLockModeUseCase(isLockOn)
         }
     }
 }

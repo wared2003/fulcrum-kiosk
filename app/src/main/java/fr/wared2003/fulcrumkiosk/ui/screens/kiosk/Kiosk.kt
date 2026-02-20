@@ -2,6 +2,7 @@ package fr.wared2003.fulcrumkiosk.ui.screens.kiosk
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.util.Log
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -50,14 +51,22 @@ fun KioskScreen(
         }
     }
 
+    if (state.url.isBlank()) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+        return
+    }
+
     LaunchedEffect(state.isFullScreen) {
+        Log.d("KioskDebug", "État FullScreen reçu : ${state.isFullScreen}")
         val window = (context as? Activity)?.window ?: return@LaunchedEffect
         val controller = WindowCompat.getInsetsController(window, window.decorView)
 
         if (state.isFullScreen) {
             controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             controller.hide(WindowInsetsCompat.Type.systemBars())
-            activity?.setKioskMode(true)
+            activity?.setKioskMode(state.isLockOn)
         } else {
             controller.show(WindowInsetsCompat.Type.systemBars())
             activity?.setKioskMode(false)

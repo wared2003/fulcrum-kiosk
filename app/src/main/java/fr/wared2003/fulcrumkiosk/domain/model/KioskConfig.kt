@@ -12,5 +12,6 @@ package fr.wared2003.fulcrumkiosk.domain.model
 data class KioskConfig(
     val url: String?,
     val isDefaultAdminPin: Boolean,
-    val isKioskPinSet: Boolean
+    val isKioskPinSet: Boolean,
+    val isLockOn: Boolean
 )

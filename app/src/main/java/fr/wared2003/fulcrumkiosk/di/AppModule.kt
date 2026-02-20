@@ -10,7 +10,7 @@ import fr.wared2003.fulcrumkiosk.ui.screens.kiosk.KioskViewModel
 import fr.wared2003.fulcrumkiosk.ui.screens.login.AdminLoginViewModel
 import fr.wared2003.fulcrumkiosk.ui.screens.settings.SettingsViewModel
 import fr.wared2003.fulcrumkiosk.ui.screens.welcome.WelcomeViewModel
-import org.koin.android.ext.koin.androidContext
+
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -40,6 +40,8 @@ val appModule = module {
     factoryOf(::SaveAdminPinUseCase)
     factoryOf(::VerifyAdminPinUseCase)
     factoryOf(::ClearKioskPinUseCase)
+    factoryOf(::SaveKioskPinUseCase)
+    factoryOf(::SaveLockModeUseCase)
 
     // Admin PIN Use Cases
     factoryOf(::SaveAdminPinUseCase)

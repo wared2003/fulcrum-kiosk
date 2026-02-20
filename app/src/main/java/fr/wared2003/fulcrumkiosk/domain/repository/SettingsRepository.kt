@@ -42,4 +42,10 @@ interface SettingsRepository {
      * Removes the Kiosk lock PIN, disabling the PIN requirement to open Kiosk.
      */
     suspend fun clearKioskPin()
+
+    /**
+     * Save the Is LockOn settings (true or false)
+     */
+    suspend fun saveIsLockOn(isLockOn: Boolean)
+
 }

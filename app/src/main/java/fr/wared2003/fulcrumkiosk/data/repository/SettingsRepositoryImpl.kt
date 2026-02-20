@@ -1,11 +1,13 @@
 package fr.wared2003.fulcrumkiosk.data.repository
 
+import android.util.Log
 import fr.wared2003.fulcrumkiosk.data.local.AppPreferences
 import fr.wared2003.fulcrumkiosk.data.local.VaultManager
 import fr.wared2003.fulcrumkiosk.domain.model.KioskConfig
 import fr.wared2003.fulcrumkiosk.domain.repository.SettingsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.runBlocking
 
 /**
  * Implementation of [SettingsRepository].
@@ -23,14 +25,18 @@ class SettingsRepositoryImpl(
     override val kioskConfig: Flow<KioskConfig> = combine(
         appPreferences.urlFlow,
         vaultManager.isDefaultAdminPinFlow,
-        vaultManager.isKioskPinSetFlow
-    ) { url, isDefault, isKioskSet ->
+        vaultManager.isKioskPinSetFlow,
+        appPreferences.isLockOnState
+    ) { url, isDefault, isKioskSet, isLockOn ->
+        Log.d("KioskDebug", "Source isLockOn: $isLockOn")
         KioskConfig(
             url = url,
+            isLockOn = isLockOn,
             isDefaultAdminPin = isDefault,
             isKioskPinSet = isKioskSet
         )
     }
+
 
     /**
      * Saves the PWA target URL.
@@ -76,5 +82,12 @@ class SettingsRepositoryImpl(
      */
     override suspend fun clearKioskPin() {
         vaultManager.clearKioskPin()
+    }
+
+    /**
+     * Save the Is LockOn settings (true or false)
+     */
+    override suspend fun saveIsLockOn(isLockOn: Boolean) {
+        appPreferences.saveIsLockOn(isLockOn)
     }
 }

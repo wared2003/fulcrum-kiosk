@@ -7,6 +7,7 @@ data class SettingsState(
     val url: String = "",
     val isSaving: Boolean = false,
     val showUrlDialog: Boolean = false,
+    val isLockOn: Boolean = false,
 
     //adminPin
     val newAdminPin: String = "",
@@ -33,6 +34,7 @@ sealed interface SettingsEvent {
     // Navigation Events
     object OnExitSettingsClicked : SettingsEvent
 
+    //security events
     //admin pin events
     object OnAdminPinClicked : SettingsEvent
     data class OnAdminPinChange(val newPin: String) : SettingsEvent
@@ -45,4 +47,7 @@ sealed interface SettingsEvent {
     object OnSaveKioskPinClicked : SettingsEvent
     object OnDismissKioskPinDialog : SettingsEvent
     object OnClearKioskPinClicked : SettingsEvent
+
+    //lock events
+    object OnClickLockMode : SettingsEvent
 }

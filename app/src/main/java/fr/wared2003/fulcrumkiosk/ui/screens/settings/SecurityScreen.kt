@@ -7,6 +7,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.AdminPanelSettings
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -39,12 +41,22 @@ fun SecurityScreen(state: SettingsState, onEvent: (SettingsEvent) -> Unit) {
 
         item {
             SettingsItem(
-                icon = Icons.AutoMirrored.Default.ExitToApp,
-                title = "Kiosk open PIN",
-                subtitle = if (state.isKioskPinSet) "Pin set" else "No pin set",
-                onClick = { onEvent(SettingsEvent.OnKioskPinClicked) }
+                icon = if (state.isLockOn) Icons.Default.Lock else Icons.Default.LockOpen,
+                title = "Kiosk Mode Lock",
+                subtitle = if (state.isLockOn) "Status: On (Secured)" else "Status: Off (unsecured)",
+                titleColor = if (!state.isLockOn) MaterialTheme.colorScheme.error else Color.Unspecified,
+                onClick = { onEvent(SettingsEvent.OnClickLockMode) }
             )
         }
+
+//        item {
+//            SettingsItem(
+//                icon = Icons.AutoMirrored.Default.ExitToApp,
+//                title = "Kiosk open PIN",
+//                subtitle = if (state.isKioskPinSet) "Pin set" else "No pin set",
+//                onClick = { onEvent(SettingsEvent.OnKioskPinClicked) }
+//            )
+//        }
     }
 }
 
