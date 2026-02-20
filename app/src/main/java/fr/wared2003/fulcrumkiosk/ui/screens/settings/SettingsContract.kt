@@ -19,6 +19,10 @@ data class SettingsState(
     val isKioskPinSet: Boolean = true,
     val showKioskPinDialog: Boolean = false,
     val kioskPinErrorMessage: String? = null,
+
+    // Display
+    val brightness: Float = 0.5f,
+    val isAutoBrightness: Boolean = true,
 )
 
 /**
@@ -50,4 +54,8 @@ sealed interface SettingsEvent {
 
     //lock events
     object OnClickLockMode : SettingsEvent
+
+    // Display Events
+    data class OnBrightnessChanged(val newBrightness: Float) : SettingsEvent
+    data class OnAutoBrightnessChanged(val isAuto: Boolean) : SettingsEvent
 }

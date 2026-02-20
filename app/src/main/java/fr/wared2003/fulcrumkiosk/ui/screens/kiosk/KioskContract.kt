@@ -6,6 +6,8 @@ data class KioskState(
     val error: String? = null,
     val isLockOn: Boolean = false,
     val isFullScreen: Boolean = false,
+    val brightness: Float = 0.5f,
+    val isAutoBrightness: Boolean = true,
 )
 
 sealed interface KioskEvent {

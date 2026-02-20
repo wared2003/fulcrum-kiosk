@@ -8,10 +8,14 @@ package fr.wared2003.fulcrumkiosk.domain.model
  * @property url The URL of the Progressive Web App (PWA) to display. Null if not configured.
  * @property isDefaultAdminPin Indicates if the administrator PIN is still set to the default value (unsecured).
  * @property isKioskPinSet Indicates if a specific PIN has been configured to exit the Kiosk mode.
+ * @property brightness The screen brightness level (0f to 1f).
+ * @property isAutoBrightness Indicates if auto brightness is enabled.
  */
 data class KioskConfig(
     val url: String?,
     val isDefaultAdminPin: Boolean,
     val isKioskPinSet: Boolean,
-    val isLockOn: Boolean
+    val isLockOn: Boolean,
+    val brightness: Float,
+    val isAutoBrightness: Boolean
 )

@@ -42,6 +42,8 @@ val appModule = module {
     factoryOf(::ClearKioskPinUseCase)
     factoryOf(::SaveKioskPinUseCase)
     factoryOf(::SaveLockModeUseCase)
+    factoryOf(::SaveBrightnessUseCase)
+    factoryOf(::SaveAutoBrightnessUseCase)
 
     // Admin PIN Use Cases
     factoryOf(::SaveAdminPinUseCase)

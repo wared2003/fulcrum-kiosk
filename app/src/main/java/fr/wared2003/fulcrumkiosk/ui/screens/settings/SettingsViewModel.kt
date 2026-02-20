@@ -4,12 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import fr.wared2003.fulcrumkiosk.domain.navigation.NavManager
 import fr.wared2003.fulcrumkiosk.domain.navigation.Screen
-import fr.wared2003.fulcrumkiosk.domain.usecase.ClearKioskPinUseCase
-import fr.wared2003.fulcrumkiosk.domain.usecase.GetKioskConfigUseCase
-import fr.wared2003.fulcrumkiosk.domain.usecase.SaveAdminPinUseCase
-import fr.wared2003.fulcrumkiosk.domain.usecase.SaveKioskPinUseCase
-import fr.wared2003.fulcrumkiosk.domain.usecase.SaveLockModeUseCase
-import fr.wared2003.fulcrumkiosk.domain.usecase.SavePwaUrlUseCase
+import fr.wared2003.fulcrumkiosk.domain.usecase.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -23,8 +18,10 @@ class SettingsViewModel(
     private val navManager: NavManager,
     private val saveAdminPinUseCase: SaveAdminPinUseCase,
     private val saveKioskPinUseCase: SaveKioskPinUseCase,
-    private val ClearKioskPinUseCase: ClearKioskPinUseCase,
+    private val clearKioskPinUseCase: ClearKioskPinUseCase,
     private val saveLockModeUseCase: SaveLockModeUseCase,
+    private val saveBrightnessUseCase: SaveBrightnessUseCase,
+    private val saveAutoBrightnessUseCase: SaveAutoBrightnessUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SettingsState())
@@ -38,7 +35,9 @@ class SettingsViewModel(
                         url = config.url ?: "",
                         isDefaultAdminPin = config.isDefaultAdminPin,
                         isKioskPinSet = config.isKioskPinSet,
-                        isLockOn = config.isLockOn
+                        isLockOn = config.isLockOn,
+                        brightness = config.brightness,
+                        isAutoBrightness = config.isAutoBrightness
                     )
                 }
             }
@@ -52,7 +51,6 @@ class SettingsViewModel(
             is SettingsEvent.OnPwaUrlClicked -> _state.update { it.copy(showUrlDialog = true) }
             is SettingsEvent.OnDismissUrlDialog -> _state.update { it.copy(showUrlDialog = false) }
             is SettingsEvent.OnSaveUrlClicked -> saveUrl()
-
 
             // Navigation Event
             SettingsEvent.OnExitSettingsClicked -> {
@@ -94,6 +92,18 @@ class SettingsViewModel(
             SettingsEvent.OnClickLockMode -> {
                 toggleLockMode()
             }
+
+            // Display Events
+            is SettingsEvent.OnBrightnessChanged -> {
+                viewModelScope.launch {
+                    saveBrightnessUseCase(event.newBrightness)
+                }
+            }
+            is SettingsEvent.OnAutoBrightnessChanged -> {
+                viewModelScope.launch {
+                    saveAutoBrightnessUseCase(event.isAuto)
+                }
+            }
         }
     }
 
@@ -110,14 +120,10 @@ class SettingsViewModel(
         }
     }
 
-    /**
-     * Saves the new Admin PIN with error handling.
-     */
     private fun saveAdminPin() {
         viewModelScope.launch {
             try {
                 saveAdminPinUseCase(_state.value.newAdminPin)
-                // Success: Close dialog and reset local input state
                 _state.update {
                     it.copy(
                         showAdminPinDialog = false,
@@ -126,21 +132,16 @@ class SettingsViewModel(
                     )
                 }
             } catch (e: Exception) {
-                // Failure: Keep dialog open and show the error (e.g., "PIN too short")
                 _state.update { it.copy(adminPinErrorMessage = e.message) }
             }
         }
     }
 
-    /**
-     * Saves the new Kiosk PIN with error handling.
-     */
     private fun saveKioskPin() {
         viewModelScope.launch {
 
             try {
                 saveKioskPinUseCase(_state.value.newKioskPin)
-                // Success: Close dialog and reset local input state
                 _state.update {
                     it.copy(
                         showKioskPinDialog = false,
@@ -149,18 +150,14 @@ class SettingsViewModel(
                     )
                 }
             } catch (e: Exception) {
-                // Failure: Keep dialog open and show the error (e.g., "PIN too short")
                 _state.update { it.copy(kioskPinErrorMessage = e.message) }
             }
         }
     }
 
-    /**
-     * Remove Kiosk PIN.
-     */
     private fun clearKioskPin() {
         viewModelScope.launch {
-            ClearKioskPinUseCase()
+            clearKioskPinUseCase()
             _state.update {
                 it.copy(
                     showKioskPinDialog = false,
@@ -171,10 +168,7 @@ class SettingsViewModel(
         }
     }
 
-    /**
-     *   toggle lock on kiosk mode (or pin if not owner mode)
-     */
-    fun toggleLockMode() {
+    private fun toggleLockMode() {
         viewModelScope.launch {
             val isLockOn = !_state.value.isLockOn
             saveLockModeUseCase(isLockOn)

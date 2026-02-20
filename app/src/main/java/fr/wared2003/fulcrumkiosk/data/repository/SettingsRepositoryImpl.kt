@@ -7,7 +7,6 @@ import fr.wared2003.fulcrumkiosk.domain.model.KioskConfig
 import fr.wared2003.fulcrumkiosk.domain.repository.SettingsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.runBlocking
 
 /**
  * Implementation of [SettingsRepository].
@@ -26,14 +25,25 @@ class SettingsRepositoryImpl(
         appPreferences.urlFlow,
         vaultManager.isDefaultAdminPinFlow,
         vaultManager.isKioskPinSetFlow,
-        appPreferences.isLockOnState
-    ) { url, isDefault, isKioskSet, isLockOn ->
+        appPreferences.isLockOnState,
+        appPreferences.brightnessFlow,
+        appPreferences.isAutoBrightnessFlow
+    ) { values ->
+        val url = values[0] as? String
+        val isDefault = values[1] as Boolean
+        val isKioskSet = values[2] as Boolean
+        val isLockOn = values[3] as Boolean
+        val brightness = values[4] as Float
+        val isAutoBrightness = values[5] as Boolean
+
         Log.d("KioskDebug", "Source isLockOn: $isLockOn")
         KioskConfig(
             url = url,
             isLockOn = isLockOn,
             isDefaultAdminPin = isDefault,
-            isKioskPinSet = isKioskSet
+            isKioskPinSet = isKioskSet,
+            brightness = brightness,
+            isAutoBrightness = isAutoBrightness
         )
     }
 
@@ -89,5 +99,19 @@ class SettingsRepositoryImpl(
      */
     override suspend fun saveIsLockOn(isLockOn: Boolean) {
         appPreferences.saveIsLockOn(isLockOn)
+    }
+
+    /**
+     * Persists the screen brightness level.
+     */
+    override suspend fun saveBrightness(brightness: Float) {
+        appPreferences.saveBrightness(brightness)
+    }
+
+    /**
+     * Persists the auto-brightness setting.
+     */
+    override suspend fun saveIsAutoBrightness(isAutoBrightness: Boolean) {
+        appPreferences.saveIsAutoBrightness(isAutoBrightness)
     }
 }

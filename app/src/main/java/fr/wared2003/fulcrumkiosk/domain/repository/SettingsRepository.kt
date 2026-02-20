@@ -48,4 +48,13 @@ interface SettingsRepository {
      */
     suspend fun saveIsLockOn(isLockOn: Boolean)
 
+    /**
+     * Persists the screen brightness level.
+     */
+    suspend fun saveBrightness(brightness: Float)
+
+    /**
+     * Persists the auto-brightness setting.
+     */
+    suspend fun saveIsAutoBrightness(isAutoBrightness: Boolean)
 }

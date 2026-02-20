@@ -74,16 +74,16 @@ fun SubMenuLayout(title: String, onBack: () -> Unit, content: @Composable () -> 
 fun SettingsItem(
     icon: ImageVector? = null,
     title: String,
-
     subtitle: String,
     onClick: (() -> Unit)? = null,
-    titleColor: Color = MaterialTheme.colorScheme.onSurface
+    titleColor: Color = MaterialTheme.colorScheme.onSurface,
+    trailingContent: @Composable (() -> Unit)? = null
 ) {
     val isClickable = onClick != null
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .alpha(if (isClickable) 1f else 0.6f),
+            .alpha(if (isClickable || trailingContent != null) 1f else 0.6f),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = if (isClickable) 2.dp else 0.dp),
         shape = RoundedCornerShape(20.dp)
@@ -93,7 +93,9 @@ fun SettingsItem(
             headlineContent = { Text(title, fontWeight = FontWeight.SemiBold, color = titleColor) },
             supportingContent = { Text(subtitle, style = MaterialTheme.typography.bodySmall) },
             trailingContent = {
-                if (isClickable) {
+                if (trailingContent != null) {
+                    trailingContent()
+                } else if (isClickable) {
                     Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null)
                 }
             },
