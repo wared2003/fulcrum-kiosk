@@ -2,8 +2,12 @@ package fr.wared2003.fulcrumkiosk.ui.screens.kiosk
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
+import android.print.PrintAttributes
+import android.print.PrintManager
 import android.util.Log
 import android.view.ViewGroup
+import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.compose.BackHandler
@@ -34,7 +38,19 @@ import androidx.compose.ui.input.pointer.changedToDown
 import androidx.compose.ui.input.pointer.pointerInput
 import fr.wared2003.fulcrumkiosk.MainActivity
 
-@SuppressLint("ClickableViewAccessibility")
+class WebAppInterface(private val context: Context, private val webView: WebView) {
+    @JavascriptInterface
+    fun print() {
+        (context as? Activity)?.runOnUiThread {
+            val printManager = context.getSystemService(Context.PRINT_SERVICE) as PrintManager
+            val jobName = "Fulcrum Kiosk Document"
+            val printAdapter = webView.createPrintDocumentAdapter(jobName)
+            printManager.print(jobName, printAdapter, PrintAttributes.Builder().build())
+        }
+    }
+}
+
+@SuppressLint("ClickableViewAccessibility", "SetJavaScriptEnabled")
 @Composable
 fun KioskScreen(
     viewModel: KioskViewModel = koinViewModel() // Injection Koin automatique
@@ -104,6 +120,7 @@ fun KioskScreen(
                                 viewModel.onEvent(KioskEvent.OnPageFinished)
                             }
                         }
+                        addJavascriptInterface(WebAppInterface(context, this), "Android")
 
                         loadUrl(state.url)
 
