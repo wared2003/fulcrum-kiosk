@@ -55,7 +55,7 @@ class KioskViewModel(
     fun handleSecretBtn() {
         val currentTime = System.currentTimeMillis()
 
-        if (currentTime - lastClickTime > 3000) {
+        if (currentTime - lastClickTime > 800) {
             clickCount = 0
         }
 
