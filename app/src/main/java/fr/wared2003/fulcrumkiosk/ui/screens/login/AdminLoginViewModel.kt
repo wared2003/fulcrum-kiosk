@@ -1,15 +1,24 @@
 package fr.wared2003.fulcrumkiosk.ui.screens.login
 
 import androidx.lifecycle.ViewModel
-import fr.wared2003.fulcrumkiosk.data.local.VaultManager
+import androidx.lifecycle.viewModelScope
 import fr.wared2003.fulcrumkiosk.domain.navigation.NavManager
 import fr.wared2003.fulcrumkiosk.domain.navigation.Screen
+import fr.wared2003.fulcrumkiosk.domain.usecase.GetKioskConfigUseCase
+import fr.wared2003.fulcrumkiosk.domain.usecase.VerifyAdminPinUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 
+/**
+ * ViewModel for the Admin Login screen.
+ * Orchestrates the authentication process using domain Use Cases.
+ */
 class AdminLoginViewModel(
-    private val vaultManager: VaultManager,
+    private val verifyAdminPinUseCase: VerifyAdminPinUseCase,
+    private val getKioskConfigUseCase: GetKioskConfigUseCase,
     private val navManager: NavManager
 ) : ViewModel() {
 
@@ -17,13 +26,26 @@ class AdminLoginViewModel(
     val state = _state.asStateFlow()
 
     init {
-        // Check if the PIN is the default one to show a hint
-        _state.update {
-            it.copy(
-                isDefaultPinHintVisible = vaultManager.isDefaultPin(),
-                defaultPin = vaultManager.getAdminPin()
-            )
-        }
+        observeKioskConfig()
+    }
+
+    /**
+     * Subscribes to kiosk configuration changes.
+     * Updates the UI hint reactively if the PIN is set to default.
+     */
+    private fun observeKioskConfig() {
+        getKioskConfigUseCase()
+            .onEach { config ->
+                _state.update {
+                    it.copy(
+                        isDefaultPinHintVisible = config.isDefaultAdminPin,
+                        // We provide the default string "1234" only if the system detects it's the default.
+                        // The actual secret PIN is never retrieved here.
+                        defaultPin = if (config.isDefaultAdminPin) "1234" else ""
+                    )
+                }
+            }
+            .launchIn(viewModelScope)
     }
 
     fun onEvent(event: AdminLoginEvent) {
@@ -40,9 +62,14 @@ class AdminLoginViewModel(
         }
     }
 
+    /**
+     * Validates the user input against the secure storage via VerifyAdminPinUseCase.
+     */
     private fun login() {
-        val correctPin = vaultManager.getAdminPin()
-        if (_state.value.pin == correctPin) {
+        val inputPin = _state.value.pin
+
+        // The comparison logic is delegated to the domain layer (Use Case -> Repository)
+        if (verifyAdminPinUseCase(inputPin)) {
             _state.update { it.copy(isError = false, pin = "") }
             navManager.navigate(Screen.Settings, Screen.Welcome, false)
         } else {

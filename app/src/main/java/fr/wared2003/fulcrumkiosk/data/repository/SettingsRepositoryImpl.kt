@@ -8,11 +8,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 
 /**
- * Implementation of the SettingsRepository.
- * This class orchestrates data operations from local data sources (AppPreferences and VaultManager).
- *
- * @param appPreferences Manages non-sensitive settings.
- * @param vaultManager Manages sensitive, encrypted data.
+ * Implementation of [SettingsRepository].
+ * Orchestrates data between non-sensitive storage (AppPreferences) and secure storage (VaultManager).
  */
 class SettingsRepositoryImpl(
     private val appPreferences: AppPreferences,
@@ -20,23 +17,58 @@ class SettingsRepositoryImpl(
 ) : SettingsRepository {
 
     /**
-     * A flow that provides the latest KioskConfig by combining data from AppPreferences and VaultManager.
-     * It respects the business rule: tailscaleKey is considered null if blank.
+     * A flow that combines non-sensitive URL data with security state booleans.
+     * The actual PINs are never exposed in this stream to maintain security principles.
      */
     override val kioskConfig: Flow<KioskConfig> = combine(
         appPreferences.urlFlow,
-    ) { (url) ->
+        vaultManager.isDefaultAdminPinFlow,
+        vaultManager.isKioskPinSetFlow
+    ) { url, isDefault, isKioskSet ->
         KioskConfig(
-            url = url
+            url = url,
+            isDefaultAdminPin = isDefault,
+            isKioskPinSet = isKioskSet
         )
     }
 
     /**
-     * Saves the PWA URL to AppPreferences.
-     * @param url The URL to be saved.
+     * Saves the PWA target URL.
      */
     override suspend fun saveUrl(url: String) {
         appPreferences.saveUrl(url)
+    }
+
+    // --- ADMIN PIN OPERATIONS ---
+
+    /**
+     * Securely updates the administrator PIN via VaultManager.
+     */
+    override suspend fun saveAdminPin(newPin: String) {
+        vaultManager.saveAdminPin(newPin)
+    }
+
+    /**
+     * Validates the provided input against the stored Admin PIN.
+     */
+    override fun verifyAdminPin(input: String): Boolean {
+        return vaultManager.verifyAdminPin(input)
+    }
+
+    // --- KIOSK PIN OPERATIONS ---
+
+    /**
+     * Securely updates the Kiosk open PIN.
+     */
+    override suspend fun saveKioskPin(newPin: String) {
+        vaultManager.saveKioskPin(newPin)
+    }
+
+    /**
+     * Validates the provided input against the stored Kiosk exit PIN.
+     */
+    override fun verifyKioskPin(input: String): Boolean {
+        return vaultManager.verifyKioskPin(input)
     }
 
 }

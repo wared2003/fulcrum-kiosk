@@ -5,38 +5,51 @@ import fr.wared2003.fulcrumkiosk.data.local.VaultManager
 import fr.wared2003.fulcrumkiosk.data.repository.SettingsRepositoryImpl
 import fr.wared2003.fulcrumkiosk.domain.navigation.NavManager
 import fr.wared2003.fulcrumkiosk.domain.repository.SettingsRepository
-import fr.wared2003.fulcrumkiosk.domain.usecase.GetKioskConfigUseCase
-import fr.wared2003.fulcrumkiosk.domain.usecase.ProcessCommandUseCase
-import fr.wared2003.fulcrumkiosk.domain.usecase.SavePwaUrlUseCase
+import fr.wared2003.fulcrumkiosk.domain.usecase.*
 import fr.wared2003.fulcrumkiosk.ui.screens.kiosk.KioskViewModel
 import fr.wared2003.fulcrumkiosk.ui.screens.login.AdminLoginViewModel
 import fr.wared2003.fulcrumkiosk.ui.screens.settings.SettingsViewModel
 import fr.wared2003.fulcrumkiosk.ui.screens.welcome.WelcomeViewModel
 import org.koin.android.ext.koin.androidContext
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.androidx.viewmodel.dsl.viewModelOf
+import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 /**
- * Koin module for the main application.
- * This module defines the dependencies for all layers.
+ * Main Koin DI module.
+ * Uses Constructor DSL (viewModelOf, factoryOf) to avoid manual get() calls.
  */
 val appModule = module {
+
     // --- DATA LAYER ---
-    single { AppPreferences(androidContext()) }
-    single { VaultManager(androidContext()) }
-    single<SettingsRepository> { SettingsRepositoryImpl(get(), get()) }
+    singleOf(::AppPreferences)
+    singleOf(::VaultManager)
+
+    // Bind the implementation to its interface
+    singleOf(::SettingsRepositoryImpl) bind SettingsRepository::class
 
     // --- DOMAIN LAYER ---
-    single { NavManager() }
+    singleOf(::NavManager)
 
-    // Use Cases
-    factory { GetKioskConfigUseCase(get()) }
-    factory { SavePwaUrlUseCase(get()) }
-    factory { ProcessCommandUseCase(get()) }
+    // Use Cases (Factory pattern)
+    factoryOf(::GetKioskConfigUseCase)
+    factoryOf(::SavePwaUrlUseCase)
+    factoryOf(::ProcessCommandUseCase)
+
+    // Admin PIN Use Cases
+    factoryOf(::SaveAdminPinUseCase)
+    factoryOf(::VerifyAdminPinUseCase)
+
+    // Kiosk PIN Use Cases (Added for completeness)
+//    factoryOf(::SaveKioskPinUseCase)
+//    factoryOf(::VerifyKioskPinUseCase)
 
     // --- PRESENTATION LAYER (VIEW MODELS) ---
-    viewModel { SettingsViewModel(get(), get(), get()) }
-    viewModel { AdminLoginViewModel(get(), get()) }
-    viewModel { WelcomeViewModel(get()) }
-    viewModel { KioskViewModel(get(), get()) }
+    // Koin automatically resolves dependencies for these constructors
+    viewModelOf(::SettingsViewModel)
+    viewModelOf(::AdminLoginViewModel)
+    viewModelOf(::WelcomeViewModel)
+    viewModelOf(::KioskViewModel)
 }
