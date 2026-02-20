@@ -30,7 +30,10 @@ data class SettingsState(
     val powerSavingDelayMinutes: Int = 5,
     val powerSavingAction: String = "dim",
     val powerSavingDimValue: Float = 0.1f,
-    val isDimLockEnabled: Boolean = false
+    val isDimLockEnabled: Boolean = false,
+
+    // General
+    val launchOnBoot: Boolean = false
 )
 
 /**
@@ -74,4 +77,7 @@ sealed interface SettingsEvent {
     data class OnPowerSavingActionChanged(val newAction: String) : SettingsEvent
     data class OnPowerSavingDimValueChanged(val newValue: Float) : SettingsEvent
     data class OnIsDimLockEnabledChanged(val isEnabled: Boolean) : SettingsEvent
+
+    // General Events
+    data class OnLaunchOnBootChanged(val isEnabled: Boolean) : SettingsEvent
 }

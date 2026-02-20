@@ -87,4 +87,9 @@ interface SettingsRepository {
      * Persists the dim lock state.
      */
     suspend fun saveIsDimLockEnabled(isEnabled: Boolean)
+
+    /**
+     * Persists the launch on boot setting.
+     */
+    suspend fun saveLaunchOnBoot(isEnabled: Boolean)
 }

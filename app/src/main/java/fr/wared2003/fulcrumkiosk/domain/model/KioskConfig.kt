@@ -16,6 +16,7 @@ package fr.wared2003.fulcrumkiosk.domain.model
  * @property powerSavingAction The action to perform when power saving is triggered (e.g., "dim", "off").
  * @property powerSavingDimValue The brightness value to use when dimming the screen.
  * @property isDimLockEnabled Overrides the power saving action to lock the device instead.
+ * @property launchOnBoot Indicates if the application should be launched on boot.
  */
 data class KioskConfig(
     val url: String?,
@@ -29,5 +30,6 @@ data class KioskConfig(
     val powerSavingDelayMinutes: Int,
     val powerSavingAction: String,
     val powerSavingDimValue: Float,
-    val isDimLockEnabled: Boolean
+    val isDimLockEnabled: Boolean,
+    val launchOnBoot: Boolean
 )

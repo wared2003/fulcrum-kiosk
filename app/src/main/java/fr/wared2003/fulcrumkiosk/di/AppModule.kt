@@ -50,6 +50,7 @@ val appModule = module {
     factoryOf(::SavePowerSavingActionUseCase)
     factoryOf(::SavePowerSavingDimValueUseCase)
     factoryOf(::SaveIsDimLockEnabledUseCase)
+    factoryOf(::SaveLaunchOnBootUseCase)
 
     // Admin PIN Use Cases
     factoryOf(::SaveAdminPinUseCase)

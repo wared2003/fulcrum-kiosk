@@ -35,6 +35,7 @@ class AppPreferences(
         val POWER_SAVING_ACTION = stringPreferencesKey("power_saving_action")
         val POWER_SAVING_DIM_VALUE = floatPreferencesKey("power_saving_dim_value")
         val IS_DIM_LOCK_ENABLED = booleanPreferencesKey("is_dim_lock_enabled")
+        val LAUNCH_ON_BOOT = booleanPreferencesKey("launch_on_boot")
     }
 
     val urlFlow: Flow<String?> = context.dataStore.data.map { it[PreferencesKeys.PWA_URL] }
@@ -47,6 +48,7 @@ class AppPreferences(
     val powerSavingActionFlow: Flow<String> = context.dataStore.data.map { it[PreferencesKeys.POWER_SAVING_ACTION] ?: "dim" }
     val powerSavingDimValueFlow: Flow<Float> = context.dataStore.data.map { it[PreferencesKeys.POWER_SAVING_DIM_VALUE] ?: 0.1f }
     val isDimLockEnabledFlow: Flow<Boolean> = context.dataStore.data.map { it[PreferencesKeys.IS_DIM_LOCK_ENABLED] ?: false }
+    val launchOnBootFlow: Flow<Boolean> = context.dataStore.data.map { it[PreferencesKeys.LAUNCH_ON_BOOT] ?: false }
 
     suspend fun saveUrl(url: String) {
         context.dataStore.edit { it[PreferencesKeys.PWA_URL] = url }
@@ -86,5 +88,9 @@ class AppPreferences(
 
     suspend fun saveIsDimLockEnabled(isEnabled: Boolean) {
         context.dataStore.edit { it[PreferencesKeys.IS_DIM_LOCK_ENABLED] = isEnabled }
+    }
+
+    suspend fun saveLaunchOnBoot(isEnabled: Boolean) {
+        context.dataStore.edit { it[PreferencesKeys.LAUNCH_ON_BOOT] = isEnabled }
     }
 }

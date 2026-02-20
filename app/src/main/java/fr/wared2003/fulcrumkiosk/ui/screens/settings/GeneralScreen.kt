@@ -13,10 +13,12 @@ import androidx.compose.material.icons.filled.Brightness7
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Power
+import androidx.compose.material.icons.filled.SystemUpdate
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -75,6 +77,19 @@ fun GeneralScreen(state: SettingsState, onEvent: (SettingsEvent) -> Unit) {
                             title = "PWA URL",
                             subtitle = state.url.ifEmpty { "Enter server address" },
                             onClick = { onEvent(SettingsEvent.OnPwaUrlClicked) }
+                        )
+                    }
+                    item {
+                        SettingsItem(
+                            icon = Icons.Default.SystemUpdate,
+                            title = "Launch on Boot",
+                            subtitle = if (state.launchOnBoot) "Enabled" else "Disabled",
+                            trailingContent = {
+                                Switch(
+                                    checked = state.launchOnBoot,
+                                    onCheckedChange = { onEvent(SettingsEvent.OnLaunchOnBootChanged(it)) }
+                                )
+                            }
                         )
                     }
                     item {

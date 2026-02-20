@@ -27,7 +27,8 @@ class SettingsViewModel(
     private val savePowerSavingDelayMinutesUseCase: SavePowerSavingDelayMinutesUseCase,
     private val savePowerSavingActionUseCase: SavePowerSavingActionUseCase,
     private val savePowerSavingDimValueUseCase: SavePowerSavingDimValueUseCase,
-    private val saveIsDimLockEnabledUseCase: SaveIsDimLockEnabledUseCase
+    private val saveIsDimLockEnabledUseCase: SaveIsDimLockEnabledUseCase,
+    private val saveLaunchOnBootUseCase: SaveLaunchOnBootUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SettingsState())
@@ -49,7 +50,8 @@ class SettingsViewModel(
                         powerSavingDelayMinutes = config.powerSavingDelayMinutes,
                         powerSavingAction = config.powerSavingAction,
                         powerSavingDimValue = config.powerSavingDimValue,
-                        isDimLockEnabled = config.isDimLockEnabled
+                        isDimLockEnabled = config.isDimLockEnabled,
+                        launchOnBoot = config.launchOnBoot
                     )
                 }
             }
@@ -146,6 +148,13 @@ class SettingsViewModel(
             is SettingsEvent.OnIsDimLockEnabledChanged -> {
                 viewModelScope.launch {
                     saveIsDimLockEnabledUseCase(event.isEnabled)
+                }
+            }
+
+            // General Events
+            is SettingsEvent.OnLaunchOnBootChanged -> {
+                viewModelScope.launch {
+                    saveLaunchOnBootUseCase(event.isEnabled)
                 }
             }
         }

@@ -24,7 +24,8 @@ class SettingsRepositoryImpl(
         appPreferences.powerSavingDelayMinutesFlow,
         appPreferences.powerSavingActionFlow,
         appPreferences.powerSavingDimValueFlow,
-        appPreferences.isDimLockEnabledFlow
+        appPreferences.isDimLockEnabledFlow,
+        appPreferences.launchOnBootFlow
     ) { values ->
         KioskConfig(
             url = values[0] as? String,
@@ -38,7 +39,8 @@ class SettingsRepositoryImpl(
             powerSavingDelayMinutes = (values[8] as? Number)?.toInt() ?: 5,
             powerSavingAction = values[9] as? String ?: "dim",
             powerSavingDimValue = (values[10] as? Number)?.toFloat() ?: 0.1f,
-            isDimLockEnabled = values[11] as? Boolean ?: false
+            isDimLockEnabled = values[11] as? Boolean ?: false,
+            launchOnBoot = values[12] as? Boolean ?: false
         )
     }
 
@@ -100,5 +102,9 @@ class SettingsRepositoryImpl(
 
     override suspend fun saveIsDimLockEnabled(isEnabled: Boolean) {
         appPreferences.saveIsDimLockEnabled(isEnabled)
+    }
+
+    override suspend fun saveLaunchOnBoot(isEnabled: Boolean) {
+        appPreferences.saveLaunchOnBoot(isEnabled)
     }
 }
