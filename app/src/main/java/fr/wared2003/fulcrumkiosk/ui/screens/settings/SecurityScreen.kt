@@ -1,27 +1,36 @@
 package fr.wared2003.fulcrumkiosk.ui.screens.settings
 
 import SettingsItem
+import android.Manifest
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.AdminPanelSettings
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun SecurityScreen(state: SettingsState, onEvent: (SettingsEvent) -> Unit) {
 
     AdminPinDialog(state = state, onEvent = onEvent)
     KioskPinDialog(state = state, onEvent = onEvent)
+
+    val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
 
 
     LazyColumn(
@@ -46,6 +55,15 @@ fun SecurityScreen(state: SettingsState, onEvent: (SettingsEvent) -> Unit) {
                 subtitle = if (state.isLockOn) "Status: On (Secured)" else "Status: Off (unsecured)",
                 titleColor = if (!state.isLockOn) MaterialTheme.colorScheme.error else Color.Unspecified,
                 onClick = { onEvent(SettingsEvent.OnClickLockMode) }
+            )
+        }
+
+        item {
+            SettingsItem(
+                icon = Icons.Default.CameraAlt,
+                title = "Camera Permission",
+                subtitle = if (cameraPermissionState.status.isGranted) "Status: Granted" else "Status: Denied",
+                onClick = { cameraPermissionState.launchPermissionRequest() }
             )
         }
 
