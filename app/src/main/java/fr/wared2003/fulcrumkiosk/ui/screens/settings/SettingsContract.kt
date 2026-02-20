@@ -5,10 +5,8 @@ package fr.wared2003.fulcrumkiosk.ui.screens.settings
  */
 data class SettingsState(
     val url: String = "",
-    val tailscaleKey: String = "",
     val isSaving: Boolean = false,
     val showUrlDialog: Boolean = false,
-    val showTailscaleDialog: Boolean = false
 )
 
 /**
@@ -20,12 +18,6 @@ sealed interface SettingsEvent {
     object OnDismissUrlDialog : SettingsEvent
     data class OnUrlChanged(val newUrl: String) : SettingsEvent
     object OnSaveUrlClicked : SettingsEvent
-
-    // Tailscale Key Events
-    object OnTailscaleKeyClicked : SettingsEvent
-    object OnDismissTailscaleDialog : SettingsEvent
-    data class OnTailscaleKeyChanged(val newKey: String) : SettingsEvent
-    object OnSaveTailscaleKeyClicked : SettingsEvent
 
     // Navigation Events
     object OnExitSettingsClicked : SettingsEvent

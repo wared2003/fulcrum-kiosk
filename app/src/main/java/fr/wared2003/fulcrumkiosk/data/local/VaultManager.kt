@@ -28,44 +28,11 @@ class VaultManager(context: Context) {
     )
 
     private object PrefKeys {
-        const val TAILSCALE_KEY = "tailscale_key"
         const val ADMIN_PIN = "admin_pin"
     }
 
     private object Defaults {
         const val ADMIN_PIN = "1234"
-    }
-
-    /**
-     * A flow that emits the Tailscale key whenever it changes.
-     * It listens for changes in the underlying SharedPreferences.
-     */
-    val tailscaleKeyFlow: Flow<String?> = callbackFlow {
-        val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-            if (key == PrefKeys.TAILSCALE_KEY) {
-                trySend(getTailscaleKey())
-            }
-        }
-        sharedPreferences.registerOnSharedPreferenceChangeListener(listener)
-        // Emit the initial value
-        trySend(getTailscaleKey())
-        awaitClose { sharedPreferences.unregisterOnSharedPreferenceChangeListener(listener) }
-    }
-
-    /**
-     * Saves the Tailscale key securely.
-     *
-     * @param key The Tailscale key to save.
-     */
-    fun saveTailscaleKey(key: String) {
-        with(sharedPreferences.edit()) {
-            putString(PrefKeys.TAILSCALE_KEY, key)
-            apply()
-        }
-    }
-
-    private fun getTailscaleKey(): String? {
-        return sharedPreferences.getString(PrefKeys.TAILSCALE_KEY, null)
     }
 
     fun getAdminPin(): String {

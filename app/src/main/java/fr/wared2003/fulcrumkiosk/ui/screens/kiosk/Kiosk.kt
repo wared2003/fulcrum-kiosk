@@ -65,16 +65,12 @@ fun KioskScreen(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        if (state.url.isBlank()) {
-            Text(
-                text = "L'URL du Kiosque n'est pas configurée.",
-                modifier = Modifier.align(Alignment.Center)
-            )
-        } else {
             AndroidView(
                 modifier = Modifier.fillMaxSize(),
                 factory = { context ->
                     WebView(context).apply {
+                        webViewRef = this
+
                         layoutParams = ViewGroup.LayoutParams(
                             ViewGroup.LayoutParams.MATCH_PARENT,
                             ViewGroup.LayoutParams.MATCH_PARENT
@@ -92,6 +88,7 @@ fun KioskScreen(
                             userAgentString = customUserAgent
                         }
 
+                        webChromeClient = android.webkit.WebChromeClient()
                         webViewClient = object : WebViewClient() {
                             override fun onPageFinished(view: WebView?, url: String?) {
                                 super.onPageFinished(view, url)
@@ -117,8 +114,6 @@ fun KioskScreen(
                     }
                 }
             )
-
-        }
 
         if (state.isLoading && state.url.isNotBlank()) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))

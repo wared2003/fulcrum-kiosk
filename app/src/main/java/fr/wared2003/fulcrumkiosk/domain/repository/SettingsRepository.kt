@@ -21,10 +21,4 @@ interface SettingsRepository {
      */
     suspend fun saveUrl(url: String)
 
-    /**
-     * Persists the Tailscale authentication key.
-     *
-     * @param key The Tailscale key to save.
-     */
-    suspend fun saveTailscaleKey(key: String)
 }

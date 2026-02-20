@@ -8,7 +8,6 @@ import fr.wared2003.fulcrumkiosk.domain.repository.SettingsRepository
 import fr.wared2003.fulcrumkiosk.domain.usecase.GetKioskConfigUseCase
 import fr.wared2003.fulcrumkiosk.domain.usecase.ProcessCommandUseCase
 import fr.wared2003.fulcrumkiosk.domain.usecase.SavePwaUrlUseCase
-import fr.wared2003.fulcrumkiosk.domain.usecase.SaveTailscaleKeyUseCase
 import fr.wared2003.fulcrumkiosk.ui.screens.kiosk.KioskViewModel
 import fr.wared2003.fulcrumkiosk.ui.screens.login.AdminLoginViewModel
 import fr.wared2003.fulcrumkiosk.ui.screens.settings.SettingsViewModel
@@ -33,11 +32,10 @@ val appModule = module {
     // Use Cases
     factory { GetKioskConfigUseCase(get()) }
     factory { SavePwaUrlUseCase(get()) }
-    factory { SaveTailscaleKeyUseCase(get()) }
     factory { ProcessCommandUseCase(get()) }
 
     // --- PRESENTATION LAYER (VIEW MODELS) ---
-    viewModel { SettingsViewModel(get(), get(), get(), get()) }
+    viewModel { SettingsViewModel(get(), get(), get()) }
     viewModel { AdminLoginViewModel(get(), get()) }
     viewModel { WelcomeViewModel(get()) }
     viewModel { KioskViewModel(get(), get()) }

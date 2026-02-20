@@ -25,11 +25,9 @@ class SettingsRepositoryImpl(
      */
     override val kioskConfig: Flow<KioskConfig> = combine(
         appPreferences.urlFlow,
-        vaultManager.tailscaleKeyFlow
-    ) { url, tailscaleKey ->
+    ) { (url) ->
         KioskConfig(
-            url = url,
-            tailscaleKey = tailscaleKey?.takeIf { it.isNotBlank() }
+            url = url
         )
     }
 
@@ -41,11 +39,4 @@ class SettingsRepositoryImpl(
         appPreferences.saveUrl(url)
     }
 
-    /**
-     * Saves the Tailscale key securely to the VaultManager.
-     * @param key The key to be saved.
-     */
-    override suspend fun saveTailscaleKey(key: String) {
-        vaultManager.saveTailscaleKey(key)
-    }
 }

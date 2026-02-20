@@ -6,7 +6,6 @@ import fr.wared2003.fulcrumkiosk.domain.navigation.NavManager
 import fr.wared2003.fulcrumkiosk.domain.navigation.Screen
 import fr.wared2003.fulcrumkiosk.domain.usecase.GetKioskConfigUseCase
 import fr.wared2003.fulcrumkiosk.domain.usecase.SavePwaUrlUseCase
-import fr.wared2003.fulcrumkiosk.domain.usecase.SaveTailscaleKeyUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -17,7 +16,6 @@ import kotlinx.coroutines.launch
 class SettingsViewModel(
     private val getKioskConfigUseCase: GetKioskConfigUseCase,
     private val savePwaUrlUseCase: SavePwaUrlUseCase,
-    private val saveTailscaleKeyUseCase: SaveTailscaleKeyUseCase,
     private val navManager: NavManager // Inject NavManager
 ) : ViewModel() {
 
@@ -29,8 +27,7 @@ class SettingsViewModel(
             .onEach { config ->
                 _state.update {
                     it.copy(
-                        url = config.url ?: "",
-                        tailscaleKey = config.tailscaleKey ?: ""
+                        url = config.url ?: ""
                     )
                 }
             }
@@ -44,12 +41,6 @@ class SettingsViewModel(
             is SettingsEvent.OnPwaUrlClicked -> _state.update { it.copy(showUrlDialog = true) }
             is SettingsEvent.OnDismissUrlDialog -> _state.update { it.copy(showUrlDialog = false) }
             is SettingsEvent.OnSaveUrlClicked -> saveUrl()
-
-            // Tailscale Events
-            is SettingsEvent.OnTailscaleKeyChanged -> _state.update { it.copy(tailscaleKey = event.newKey) }
-            is SettingsEvent.OnTailscaleKeyClicked -> _state.update { it.copy(showTailscaleDialog = true) }
-            is SettingsEvent.OnDismissTailscaleDialog -> _state.update { it.copy(showTailscaleDialog = false) }
-            is SettingsEvent.OnSaveTailscaleKeyClicked -> saveTailscaleKey()
 
             // Navigation Event
             SettingsEvent.OnExitSettingsClicked -> {
@@ -68,14 +59,6 @@ class SettingsViewModel(
                 // TODO: Handle URL validation error
             }
             _state.update { it.copy(isSaving = false) }
-        }
-    }
-
-    private fun saveTailscaleKey() {
-        viewModelScope.launch {
-            _state.update { it.copy(isSaving = true) }
-            saveTailscaleKeyUseCase(state.value.tailscaleKey)
-            _state.update { it.copy(showTailscaleDialog = false, isSaving = false) }
         }
     }
 }
