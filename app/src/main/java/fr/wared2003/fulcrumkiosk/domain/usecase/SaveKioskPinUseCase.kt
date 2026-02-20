@@ -3,17 +3,19 @@ package fr.wared2003.fulcrumkiosk.domain.usecase
 import fr.wared2003.fulcrumkiosk.domain.repository.SettingsRepository
 
 /**
- * Use case to update the administrator PIN in secure storage.
+ * Use case to securely update or set the Kiosk exit PIN.
+ * Includes business validation rules for the Kiosk security layer.
  */
-class SaveAdminPinUseCase(
+class SaveKioskPinUseCase(
     private val repository: SettingsRepository
 ) {
     /**
-     * Updates the admin PIN.
-     * * @param newPin The new PIN to be saved.
+     * Validates and saves the Kiosk PIN.
+     * @param newPin The PIN string provided by the user.
+     * @throws IllegalArgumentException if the PIN doesn't meet the 4-digit requirement.
      */
     suspend operator fun invoke(newPin: String) {
-        // Business Rule: PIN must be exactly 4 digits
+        // Business Rule: Kiosk PIN must be exactly 4 digits
         if (newPin.length != 4) {
             throw IllegalArgumentException("The PIN must be exactly 4 digits long.")
         }
@@ -23,12 +25,6 @@ class SaveAdminPinUseCase(
             throw IllegalArgumentException("The PIN must only contain numeric digits.")
         }
 
-        // Business Rule: PIN must not be the default value
-        if (newPin == "1234") {
-            throw IllegalArgumentException("The PIN cannot be the default value (1234).")
-        }
-
-        // If validation passes, delegate to repository
-        repository.saveAdminPin(newPin)
+        repository.saveKioskPin(newPin)
     }
 }

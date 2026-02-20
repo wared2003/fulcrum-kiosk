@@ -37,14 +37,19 @@ val appModule = module {
     factoryOf(::GetKioskConfigUseCase)
     factoryOf(::SavePwaUrlUseCase)
     factoryOf(::ProcessCommandUseCase)
+    factoryOf(::SaveAdminPinUseCase)
+    factoryOf(::VerifyAdminPinUseCase)
+    factoryOf(::ClearKioskPinUseCase)
 
     // Admin PIN Use Cases
     factoryOf(::SaveAdminPinUseCase)
     factoryOf(::VerifyAdminPinUseCase)
 
     // Kiosk PIN Use Cases (Added for completeness)
-//    factoryOf(::SaveKioskPinUseCase)
-//    factoryOf(::VerifyKioskPinUseCase)
+    factoryOf(::SaveKioskPinUseCase)
+    factoryOf(::VerifyKioskPinUseCase)
+    factoryOf(::ClearKioskPinUseCase)
+
 
     // --- PRESENTATION LAYER (VIEW MODELS) ---
     // Koin automatically resolves dependencies for these constructors

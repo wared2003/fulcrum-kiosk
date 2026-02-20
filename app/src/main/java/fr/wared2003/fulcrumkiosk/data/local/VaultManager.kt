@@ -7,6 +7,7 @@ import androidx.security.crypto.MasterKey
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import androidx.core.content.edit
 
 /**
  * Manages sensitive data using EncryptedSharedPreferences for secure storage.
@@ -54,9 +55,9 @@ class VaultManager(context: Context) {
      */
     val isDefaultAdminPinFlow: Flow<Boolean> = callbackFlow {
         val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-            if (key == PrefKeys.ADMIN_PIN) trySend(isDefaultPin())
+            if (key == PrefKeys.ADMIN_PIN) trySend(isDefaulAdmintPin())
         }
-        trySend(isDefaultPin())
+        trySend(isDefaulAdmintPin())
         sharedPreferences.registerOnSharedPreferenceChangeListener(listener)
         awaitClose { sharedPreferences.unregisterOnSharedPreferenceChangeListener(listener) }
     }
@@ -79,7 +80,7 @@ class VaultManager(context: Context) {
     /**
      * Returns true if no PIN is stored or if the stored PIN matches the default.
      */
-    fun isDefaultPin(): Boolean {
+    fun isDefaulAdmintPin(): Boolean {
         val stored = sharedPreferences.getString(PrefKeys.ADMIN_PIN, null)
         return stored == null || stored == Defaults.ADMIN_PIN
     }
@@ -111,20 +112,22 @@ class VaultManager(context: Context) {
      * Persists a new Admin PIN to encrypted storage.
      */
     fun saveAdminPin(pin: String) {
-        sharedPreferences.edit().putString(PrefKeys.ADMIN_PIN, pin).apply()
+        sharedPreferences.edit { putString(PrefKeys.ADMIN_PIN, pin) }
     }
 
     /**
      * Persists a new Kiosk Exit PIN to encrypted storage.
      */
     fun saveKioskPin(pin: String) {
-        sharedPreferences.edit().putString(PrefKeys.KIOSK_PIN, pin).apply()
+        sharedPreferences.edit { putString(PrefKeys.KIOSK_PIN, pin) }
     }
 
     /**
      * Removes the Kiosk Exit PIN, disabling the PIN requirement for exit.
      */
-    fun clearKioskPin() {
-        sharedPreferences.edit().remove(PrefKeys.KIOSK_PIN).apply()
+     fun clearKioskPin() {
+        sharedPreferences.edit(commit = true) {
+            remove(PrefKeys.KIOSK_PIN)
+        }
     }
 }

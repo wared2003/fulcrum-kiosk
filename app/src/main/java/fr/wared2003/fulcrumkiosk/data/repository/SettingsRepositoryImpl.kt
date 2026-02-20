@@ -67,8 +67,14 @@ class SettingsRepositoryImpl(
     /**
      * Validates the provided input against the stored Kiosk exit PIN.
      */
-    override fun verifyKioskPin(input: String): Boolean {
+    override suspend fun verifyKioskPin(input: String): Boolean {
         return vaultManager.verifyKioskPin(input)
     }
 
+    /**
+     * Removes the Kiosk PIN, disabling the PIN requirement for to open kiosk.
+     */
+    override suspend fun clearKioskPin() {
+        vaultManager.clearKioskPin()
+    }
 }

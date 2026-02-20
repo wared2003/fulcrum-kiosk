@@ -74,8 +74,10 @@ fun SubMenuLayout(title: String, onBack: () -> Unit, content: @Composable () -> 
 fun SettingsItem(
     icon: ImageVector? = null,
     title: String,
+
     subtitle: String,
-    onClick: (() -> Unit)? = null
+    onClick: (() -> Unit)? = null,
+    titleColor: Color = MaterialTheme.colorScheme.onSurface
 ) {
     val isClickable = onClick != null
     Card(
@@ -88,7 +90,7 @@ fun SettingsItem(
     ) {
         ListItem(
             modifier = if (isClickable) Modifier.clickable { onClick?.invoke() } else Modifier,
-            headlineContent = { Text(title, fontWeight = FontWeight.SemiBold) },
+            headlineContent = { Text(title, fontWeight = FontWeight.SemiBold, color = titleColor) },
             supportingContent = { Text(subtitle, style = MaterialTheme.typography.bodySmall) },
             trailingContent = {
                 if (isClickable) {

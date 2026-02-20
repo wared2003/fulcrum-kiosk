@@ -36,5 +36,10 @@ interface SettingsRepository {
     /**
      * Validates the provided input against the stored Kiosk lock PIN.
      */
-    fun verifyKioskPin(input: String): Boolean
+    suspend fun verifyKioskPin(input: String): Boolean
+
+    /**
+     * Removes the Kiosk lock PIN, disabling the PIN requirement to open Kiosk.
+     */
+    suspend fun clearKioskPin()
 }

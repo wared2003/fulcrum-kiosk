@@ -7,6 +7,17 @@ data class SettingsState(
     val url: String = "",
     val isSaving: Boolean = false,
     val showUrlDialog: Boolean = false,
+
+    //adminPin
+    val newAdminPin: String = "",
+    val isDefaultAdminPin: Boolean = true,
+    val showAdminPinDialog: Boolean = false,
+    val adminPinErrorMessage: String? = null,
+
+    val newKioskPin: String = "",
+    val isKioskPinSet: Boolean = true,
+    val showKioskPinDialog: Boolean = false,
+    val kioskPinErrorMessage: String? = null,
 )
 
 /**
@@ -21,4 +32,17 @@ sealed interface SettingsEvent {
 
     // Navigation Events
     object OnExitSettingsClicked : SettingsEvent
+
+    //admin pin events
+    object OnAdminPinClicked : SettingsEvent
+    data class OnAdminPinChange(val newPin: String) : SettingsEvent
+    object OnSaveAdminPinClicked : SettingsEvent
+    object OnDismissAdminPinDialog : SettingsEvent
+
+    //admin pin events
+    object OnKioskPinClicked : SettingsEvent
+    data class OnKioskPinChange(val newPin: String) : SettingsEvent
+    object OnSaveKioskPinClicked : SettingsEvent
+    object OnDismissKioskPinDialog : SettingsEvent
+    object OnClearKioskPinClicked : SettingsEvent
 }

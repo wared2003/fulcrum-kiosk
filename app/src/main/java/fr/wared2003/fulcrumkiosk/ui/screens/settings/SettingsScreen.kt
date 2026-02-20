@@ -83,7 +83,7 @@ fun SettingsScreen(
     val settingsScreens: List<@Composable () -> Unit> = listOf(
         { GeneralScreen(state, viewModel::onEvent) },
         { PlaceholderSettingsScreen("NATS") },
-        { PlaceholderSettingsScreen("Security") },
+        { SecurityScreen(state, viewModel::onEvent) },
         { NetworkScreen() },
         { PlaceholderSettingsScreen("About") }
     )
