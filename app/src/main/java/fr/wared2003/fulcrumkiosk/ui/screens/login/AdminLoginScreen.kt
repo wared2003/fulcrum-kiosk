@@ -22,6 +22,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -41,6 +42,8 @@ fun AdminLoginScreen(viewModel: AdminLoginViewModel = koinViewModel()) {
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
+
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -128,6 +131,19 @@ fun AdminLoginScreen(viewModel: AdminLoginViewModel = koinViewModel()) {
                     Text(
                         text = "Unlock Settings",
                         style = MaterialTheme.typography.labelLarge
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                TextButton(
+                    onClick = { viewModel.onEvent(AdminLoginEvent.OnBackToKiosk) },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Cancel and return to Kiosk",
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+                        style = MaterialTheme.typography.bodyMedium
                     )
                 }
             }

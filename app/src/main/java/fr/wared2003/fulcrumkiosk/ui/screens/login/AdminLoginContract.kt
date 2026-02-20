@@ -20,4 +20,5 @@ data class AdminLoginState(
 sealed interface AdminLoginEvent {
     data class OnPinChange(val newPin: String) : AdminLoginEvent
     object OnLoginClick : AdminLoginEvent
+    object OnBackToKiosk : AdminLoginEvent
 }

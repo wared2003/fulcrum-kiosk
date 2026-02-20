@@ -34,6 +34,9 @@ class AdminLoginViewModel(
             AdminLoginEvent.OnLoginClick -> {
                 login()
             }
+            AdminLoginEvent.OnBackToKiosk -> {
+                navManager.navigate(Screen.Kiosk, Screen.Welcome, false)
+            }
         }
     }
 
