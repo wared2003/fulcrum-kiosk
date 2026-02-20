@@ -24,7 +24,13 @@ data class SettingsState(
     val brightness: Float = 0.5f,
     val isAutoBrightness: Boolean = true,
     val autoBrightnessMin: Float = 0.1f,
-    val autoBrightnessMax: Float = 1.0f
+    val autoBrightnessMax: Float = 1.0f,
+
+    // Power Saving
+    val powerSavingDelayMinutes: Int = 5,
+    val powerSavingAction: String = "dim",
+    val powerSavingDimValue: Float = 0.1f,
+    val isDimLockEnabled: Boolean = false
 )
 
 /**
@@ -62,4 +68,10 @@ sealed interface SettingsEvent {
     data class OnAutoBrightnessChanged(val isAuto: Boolean) : SettingsEvent
     data class OnAutoBrightnessMinChanged(val newMin: Float) : SettingsEvent
     data class OnAutoBrightnessMaxChanged(val newMax: Float) : SettingsEvent
+
+    // Power Saving Events
+    data class OnPowerSavingDelayChanged(val newDelay: Int) : SettingsEvent
+    data class OnPowerSavingActionChanged(val newAction: String) : SettingsEvent
+    data class OnPowerSavingDimValueChanged(val newValue: Float) : SettingsEvent
+    data class OnIsDimLockEnabledChanged(val isEnabled: Boolean) : SettingsEvent
 }

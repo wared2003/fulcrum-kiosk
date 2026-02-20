@@ -23,7 +23,11 @@ class SettingsViewModel(
     private val saveBrightnessUseCase: SaveBrightnessUseCase,
     private val saveAutoBrightnessUseCase: SaveAutoBrightnessUseCase,
     private val saveAutoBrightnessMinUseCase: SaveAutoBrightnessMinUseCase,
-    private val saveAutoBrightnessMaxUseCase: SaveAutoBrightnessMaxUseCase
+    private val saveAutoBrightnessMaxUseCase: SaveAutoBrightnessMaxUseCase,
+    private val savePowerSavingDelayMinutesUseCase: SavePowerSavingDelayMinutesUseCase,
+    private val savePowerSavingActionUseCase: SavePowerSavingActionUseCase,
+    private val savePowerSavingDimValueUseCase: SavePowerSavingDimValueUseCase,
+    private val saveIsDimLockEnabledUseCase: SaveIsDimLockEnabledUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SettingsState())
@@ -41,7 +45,11 @@ class SettingsViewModel(
                         brightness = config.brightness,
                         isAutoBrightness = config.isAutoBrightness,
                         autoBrightnessMin = config.autoBrightnessMin,
-                        autoBrightnessMax = config.autoBrightnessMax
+                        autoBrightnessMax = config.autoBrightnessMax,
+                        powerSavingDelayMinutes = config.powerSavingDelayMinutes,
+                        powerSavingAction = config.powerSavingAction,
+                        powerSavingDimValue = config.powerSavingDimValue,
+                        isDimLockEnabled = config.isDimLockEnabled
                     )
                 }
             }
@@ -116,6 +124,28 @@ class SettingsViewModel(
             is SettingsEvent.OnAutoBrightnessMaxChanged -> {
                 viewModelScope.launch {
                     saveAutoBrightnessMaxUseCase(event.newMax)
+                }
+            }
+
+            // Power Saving Events
+            is SettingsEvent.OnPowerSavingDelayChanged -> {
+                viewModelScope.launch {
+                    savePowerSavingDelayMinutesUseCase(event.newDelay)
+                }
+            }
+            is SettingsEvent.OnPowerSavingActionChanged -> {
+                viewModelScope.launch {
+                    savePowerSavingActionUseCase(event.newAction)
+                }
+            }
+            is SettingsEvent.OnPowerSavingDimValueChanged -> {
+                viewModelScope.launch {
+                    savePowerSavingDimValueUseCase(event.newValue)
+                }
+            }
+            is SettingsEvent.OnIsDimLockEnabledChanged -> {
+                viewModelScope.launch {
+                    saveIsDimLockEnabledUseCase(event.isEnabled)
                 }
             }
         }

@@ -14,11 +14,12 @@ import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -27,12 +28,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import fr.wared2003.fulcrumkiosk.MainActivity
+import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 
 class WebAppInterface(private val context: Context, private val webView: WebView) {
@@ -67,6 +71,9 @@ fun KioskScreen(
 
     val state by viewModel.state.collectAsState()
 
+    var lastInteractionTime by remember { mutableStateOf(System.currentTimeMillis()) }
+    var isScreenDimmed by remember { mutableStateOf(false) }
+
     BackHandler(enabled = true) {
         if (webViewRef?.canGoBack() == true) {
             webViewRef?.goBack()
@@ -81,13 +88,13 @@ fun KioskScreen(
     }
 
     val window = context.findWindow()
-    LaunchedEffect(state.brightness, state.isAutoBrightness) {
+    LaunchedEffect(state.brightness, state.isAutoBrightness, isScreenDimmed) {
         if (window != null) {
             val attributes = window.attributes
-            attributes.screenBrightness = if (state.isAutoBrightness) {
-                WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE
-            } else {
-                state.brightness
+            attributes.screenBrightness = when {
+                isScreenDimmed -> state.powerSavingDimValue
+                state.isAutoBrightness -> WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE
+                else -> state.brightness
             }
             window.attributes = attributes
         }
@@ -105,6 +112,16 @@ fun KioskScreen(
         } else {
             controller.show(WindowInsetsCompat.Type.systemBars())
             activity?.setKioskMode(false)
+        }
+    }
+
+    LaunchedEffect(lastInteractionTime, state.powerSavingDelayMinutes) {
+        val delayMillis = state.powerSavingDelayMinutes * 60 * 1000L
+        delay(delayMillis)
+        val elapsedTime = System.currentTimeMillis() - lastInteractionTime
+        if (elapsedTime >= delayMillis) {
+            isScreenDimmed = true
+            viewModel.onEvent(KioskEvent.OnInactive)
         }
     }
 
@@ -145,6 +162,10 @@ fun KioskScreen(
 
                     setOnTouchListener { _, event ->
                         if (event.action == android.view.MotionEvent.ACTION_DOWN) {
+                            lastInteractionTime = System.currentTimeMillis()
+                            if(isScreenDimmed) {
+                                isScreenDimmed = false
+                            }
                             viewModel.onEvent(KioskEvent.OnSecretBtnClicked)
                         }
                         false
@@ -159,6 +180,23 @@ fun KioskScreen(
                 }
             }
         )
+
+        if (state.powerSavingAction == "off" && isScreenDimmed) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black)
+                    .pointerInput(Unit) {
+                        detectTapGestures(
+                            onPress = {
+                                lastInteractionTime = System.currentTimeMillis()
+                                isScreenDimmed = false
+                            }
+                        )
+                    }
+
+            )
+        }
 
         if (state.isLoading && state.url.isNotBlank()) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))

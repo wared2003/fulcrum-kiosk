@@ -1,7 +1,11 @@
 package fr.wared2003.fulcrumkiosk.ui.screens.kiosk
 
+import android.app.Activity
+import android.app.admin.DevicePolicyManager
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import fr.wared2003.fulcrumkiosk.MainActivity
 import fr.wared2003.fulcrumkiosk.domain.navigation.NavManager
 import fr.wared2003.fulcrumkiosk.domain.navigation.Screen
 import fr.wared2003.fulcrumkiosk.domain.repository.SettingsRepository
@@ -12,7 +16,8 @@ import kotlinx.coroutines.launch
 
 class KioskViewModel(
     private val repository: SettingsRepository,
-    private val navManager: NavManager
+    private val navManager: NavManager,
+    private val context: Context
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(KioskState())
@@ -40,7 +45,11 @@ class KioskViewModel(
                     isFullScreen = true,
                     isLockOn = config.isLockOn,
                     brightness = config.brightness,
-                    isAutoBrightness = config.isAutoBrightness
+                    isAutoBrightness = config.isAutoBrightness,
+                    powerSavingDelayMinutes = config.powerSavingDelayMinutes,
+                    powerSavingAction = config.powerSavingAction,
+                    powerSavingDimValue = config.powerSavingDimValue,
+                    isDimLockEnabled = config.isDimLockEnabled
                 ) }
             }
         }
@@ -51,7 +60,28 @@ class KioskViewModel(
             is KioskEvent.OnPageFinished -> _state.update { it.copy(isLoading = false) }
             is KioskEvent.OnError -> _state.update { it.copy(error = event.message, isLoading = false)}
             is KioskEvent.OnSecretBtnClicked -> handleSecretBtn()
+            is KioskEvent.OnInactive -> handleInactive()
+        }
+    }
 
+    private fun handleInactive() {
+        val window = (context as? Activity)?.window
+        if (_state.value.isDimLockEnabled && isDeviceOwner()) {
+            val dpm = context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
+            dpm.lockNow()
+        } else {
+            when (_state.value.powerSavingAction) {
+                "dim" -> {
+                    val attributes = window?.attributes
+                    attributes?.screenBrightness = _state.value.powerSavingDimValue
+                    window?.attributes = attributes
+                }
+                "off" -> {
+                    val attributes = window?.attributes
+                    attributes?.screenBrightness = 0.001f
+                    window?.attributes = attributes
+                }
+            }
         }
     }
 
@@ -71,5 +101,10 @@ class KioskViewModel(
                 navManager.navigate(Screen.Login)
             }
         }
+    }
+
+    private fun isDeviceOwner(): Boolean {
+        val dpm = context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
+        return dpm.isDeviceOwnerApp(context.packageName)
     }
 }

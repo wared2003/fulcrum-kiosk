@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.floatPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
@@ -30,110 +31,60 @@ class AppPreferences(
         val IS_AUTO_BRIGHTNESS = booleanPreferencesKey("is_auto_brightness")
         val AUTO_BRIGHTNESS_MIN = floatPreferencesKey("auto_brightness_min")
         val AUTO_BRIGHTNESS_MAX = floatPreferencesKey("auto_brightness_max")
+        val POWER_SAVING_DELAY_MINUTES = intPreferencesKey("power_saving_delay_minutes")
+        val POWER_SAVING_ACTION = stringPreferencesKey("power_saving_action")
+        val POWER_SAVING_DIM_VALUE = floatPreferencesKey("power_saving_dim_value")
+        val IS_DIM_LOCK_ENABLED = booleanPreferencesKey("is_dim_lock_enabled")
     }
 
-    /**
-     * A flow that emits the saved PWA URL whenever it changes.
-     */
-    val urlFlow: Flow<String?> = context.dataStore.data
-        .map { preferences ->
-            preferences[PreferencesKeys.PWA_URL]
-        }
+    val urlFlow: Flow<String?> = context.dataStore.data.map { it[PreferencesKeys.PWA_URL] }
+    val isLockOnState: Flow<Boolean> = context.dataStore.data.map { it[PreferencesKeys.IS_LOCK_ON] ?: false }
+    val brightnessFlow: Flow<Float> = context.dataStore.data.map { it[PreferencesKeys.BRIGHTNESS] ?: 0.5f }
+    val isAutoBrightnessFlow: Flow<Boolean> = context.dataStore.data.map { it[PreferencesKeys.IS_AUTO_BRIGHTNESS] ?: true }
+    val autoBrightnessMinFlow: Flow<Float> = context.dataStore.data.map { it[PreferencesKeys.AUTO_BRIGHTNESS_MIN] ?: 0.1f }
+    val autoBrightnessMaxFlow: Flow<Float> = context.dataStore.data.map { it[PreferencesKeys.AUTO_BRIGHTNESS_MAX] ?: 1.0f }
+    val powerSavingDelayMinutesFlow: Flow<Int> = context.dataStore.data.map { it[PreferencesKeys.POWER_SAVING_DELAY_MINUTES] ?: 5 }
+    val powerSavingActionFlow: Flow<String> = context.dataStore.data.map { it[PreferencesKeys.POWER_SAVING_ACTION] ?: "dim" }
+    val powerSavingDimValueFlow: Flow<Float> = context.dataStore.data.map { it[PreferencesKeys.POWER_SAVING_DIM_VALUE] ?: 0.1f }
+    val isDimLockEnabledFlow: Flow<Boolean> = context.dataStore.data.map { it[PreferencesKeys.IS_DIM_LOCK_ENABLED] ?: false }
 
-    /**
-     * A flow that emits the saved LockOnState whenever it changes.
-     */
-    val isLockOnState: Flow<Boolean> = context.dataStore.data
-        .map { preferences -> preferences[PreferencesKeys.IS_LOCK_ON] == true }
-
-    /**
-     * A flow that emits the saved brightness level whenever it changes.
-     */
-    val brightnessFlow: Flow<Float> = context.dataStore.data
-        .map { preferences -> preferences[PreferencesKeys.BRIGHTNESS] ?: 0.5f }
-
-    /**
-     * A flow that emits the saved auto-brightness state whenever it changes.
-     */
-    val isAutoBrightnessFlow: Flow<Boolean> = context.dataStore.data
-        .map { preferences -> preferences[PreferencesKeys.IS_AUTO_BRIGHTNESS] ?: true }
-
-    /**
-     * A flow that emits the saved min auto-brightness level whenever it changes.
-     */
-    val autoBrightnessMinFlow: Flow<Float> = context.dataStore.data
-        .map { preferences -> preferences[PreferencesKeys.AUTO_BRIGHTNESS_MIN] ?: 0.1f }
-
-    /**
-     * A flow that emits the saved max auto-brightness level whenever it changes.
-     */
-    val autoBrightnessMaxFlow: Flow<Float> = context.dataStore.data
-        .map { preferences -> preferences[PreferencesKeys.AUTO_BRIGHTNESS_MAX] ?: 1.0f }
-
-
-    /**
-     * Persists the PWA URL.
-     *
-     * @param url The URL to save.
-     */
     suspend fun saveUrl(url: String) {
-        context.dataStore.edit { settings ->
-            settings[PreferencesKeys.PWA_URL] = url
-        }
+        context.dataStore.edit { it[PreferencesKeys.PWA_URL] = url }
     }
 
-    /*
-     * Persists the lock state.
-     *
-     * @param isLockOn The lock state to save.
-     */
     suspend fun saveIsLockOn(isLockOn: Boolean) {
-        context.dataStore.edit { settings ->
-            settings[PreferencesKeys.IS_LOCK_ON] = isLockOn
-        }
+        context.dataStore.edit { it[PreferencesKeys.IS_LOCK_ON] = isLockOn }
     }
 
-    /**
-     * Persists the brightness level.
-     *
-     * @param brightness The brightness level to save.
-     */
     suspend fun saveBrightness(brightness: Float) {
-        context.dataStore.edit { settings ->
-            settings[PreferencesKeys.BRIGHTNESS] = brightness
-        }
+        context.dataStore.edit { it[PreferencesKeys.BRIGHTNESS] = brightness }
     }
 
-    /**
-     * Persists the auto-brightness state.
-     *
-     * @param isAutoBrightness The auto-brightness state to save.
-     */
     suspend fun saveIsAutoBrightness(isAutoBrightness: Boolean) {
-        context.dataStore.edit { settings ->
-            settings[PreferencesKeys.IS_AUTO_BRIGHTNESS] = isAutoBrightness
-        }
+        context.dataStore.edit { it[PreferencesKeys.IS_AUTO_BRIGHTNESS] = isAutoBrightness }
     }
 
-    /**
-     * Persists the min auto-brightness level.
-     *
-     * @param min The min auto-brightness level to save.
-     */
     suspend fun saveAutoBrightnessMin(min: Float) {
-        context.dataStore.edit { settings ->
-            settings[PreferencesKeys.AUTO_BRIGHTNESS_MIN] = min
-        }
+        context.dataStore.edit { it[PreferencesKeys.AUTO_BRIGHTNESS_MIN] = min }
     }
 
-    /**
-     * Persists the max auto-brightness level.
-     *
-     * @param max The max auto-brightness level to save.
-     */
     suspend fun saveAutoBrightnessMax(max: Float) {
-        context.dataStore.edit { settings ->
-            settings[PreferencesKeys.AUTO_BRIGHTNESS_MAX] = max
-        }
+        context.dataStore.edit { it[PreferencesKeys.AUTO_BRIGHTNESS_MAX] = max }
+    }
+
+    suspend fun savePowerSavingDelayMinutes(delay: Int) {
+        context.dataStore.edit { it[PreferencesKeys.POWER_SAVING_DELAY_MINUTES] = delay }
+    }
+
+    suspend fun savePowerSavingAction(action: String) {
+        context.dataStore.edit { it[PreferencesKeys.POWER_SAVING_ACTION] = action }
+    }
+
+    suspend fun savePowerSavingDimValue(value: Float) {
+        context.dataStore.edit { it[PreferencesKeys.POWER_SAVING_DIM_VALUE] = value }
+    }
+
+    suspend fun saveIsDimLockEnabled(isEnabled: Boolean) {
+        context.dataStore.edit { it[PreferencesKeys.IS_DIM_LOCK_ENABLED] = isEnabled }
     }
 }

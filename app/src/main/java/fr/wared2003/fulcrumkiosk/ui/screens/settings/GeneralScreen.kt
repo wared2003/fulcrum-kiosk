@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Brightness7
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Power
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,7 +26,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import fr.wared2003.fulcrumkiosk.ui.screens.settings.BrightnessScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,6 +58,11 @@ fun GeneralScreen(state: SettingsState, onEvent: (SettingsEvent) -> Unit) {
                     BrightnessScreen(state, onEvent)
                 }
             }
+            "power" -> {
+                SubMenuLayout(title = "Power Saving Settings", onBack = { activeSubMenu = null }) {
+                    PowerSavingScreen(state, onEvent)
+                }
+            }
             else -> {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
@@ -73,14 +78,19 @@ fun GeneralScreen(state: SettingsState, onEvent: (SettingsEvent) -> Unit) {
                         )
                     }
                     item {
-                        SettingsItem(Icons.Default.Lock, "Lock Task Mode", "Status: Active", onClick = null)
-                    }
-                    item {
                         SettingsItem(
                             icon = Icons.Default.Brightness7,
                             title = "Brightness",
                             subtitle = "Adjust screen brightness",
                             onClick = { activeSubMenu = "brightness" }
+                        )
+                    }
+                    item {
+                        SettingsItem(
+                            icon = Icons.Default.Power,
+                            title = "Power Saving",
+                            subtitle = "Configure power saving settings",
+                            onClick = { activeSubMenu = "power" }
                         )
                     }
                 }

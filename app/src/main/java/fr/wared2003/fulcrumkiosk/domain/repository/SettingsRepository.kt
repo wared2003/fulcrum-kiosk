@@ -67,4 +67,24 @@ interface SettingsRepository {
      * Persists the max auto-brightness level.
      */
     suspend fun saveAutoBrightnessMax(max: Float)
+
+    /**
+     * Persists the power saving delay.
+     */
+    suspend fun savePowerSavingDelayMinutes(delay: Int)
+
+    /**
+     * Persists the power saving action.
+     */
+    suspend fun savePowerSavingAction(action: String)
+
+    /**
+     * Persists the power saving dim value.
+     */
+    suspend fun savePowerSavingDimValue(value: Float)
+
+    /**
+     * Persists the dim lock state.
+     */
+    suspend fun saveIsDimLockEnabled(isEnabled: Boolean)
 }

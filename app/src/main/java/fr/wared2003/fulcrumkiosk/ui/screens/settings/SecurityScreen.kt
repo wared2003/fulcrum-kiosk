@@ -72,6 +72,20 @@ fun SecurityScreen(state: SettingsState, onEvent: (SettingsEvent) -> Unit) {
             )
         }
 
+        item {
+            SettingsItem(
+                icon = Icons.Default.Lock,
+                title = "Dim Lock",
+                subtitle = if (state.isDimLockEnabled) "Overrides dim to lock the device" else "Dim will only turn off the screen",
+                trailingContent = {
+                    Switch(
+                        checked = state.isDimLockEnabled,
+                        onCheckedChange = { onEvent(SettingsEvent.OnIsDimLockEnabledChanged(it)) }
+                    )
+                }
+            )
+        }
+
 //        item {
 //            SettingsItem(
 //                icon = Icons.AutoMirrored.Default.ExitToApp,
