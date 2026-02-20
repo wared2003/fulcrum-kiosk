@@ -23,6 +23,8 @@ data class SettingsState(
     // Display
     val brightness: Float = 0.5f,
     val isAutoBrightness: Boolean = true,
+    val autoBrightnessMin: Float = 0.1f,
+    val autoBrightnessMax: Float = 1.0f
 )
 
 /**
@@ -58,4 +60,6 @@ sealed interface SettingsEvent {
     // Display Events
     data class OnBrightnessChanged(val newBrightness: Float) : SettingsEvent
     data class OnAutoBrightnessChanged(val isAuto: Boolean) : SettingsEvent
+    data class OnAutoBrightnessMinChanged(val newMin: Float) : SettingsEvent
+    data class OnAutoBrightnessMaxChanged(val newMax: Float) : SettingsEvent
 }

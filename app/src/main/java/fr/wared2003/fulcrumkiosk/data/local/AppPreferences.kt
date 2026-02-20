@@ -28,6 +28,8 @@ class AppPreferences(
         val IS_LOCK_ON = booleanPreferencesKey("is_lock_on")
         val BRIGHTNESS = floatPreferencesKey("brightness")
         val IS_AUTO_BRIGHTNESS = booleanPreferencesKey("is_auto_brightness")
+        val AUTO_BRIGHTNESS_MIN = floatPreferencesKey("auto_brightness_min")
+        val AUTO_BRIGHTNESS_MAX = floatPreferencesKey("auto_brightness_max")
     }
 
     /**
@@ -55,6 +57,18 @@ class AppPreferences(
      */
     val isAutoBrightnessFlow: Flow<Boolean> = context.dataStore.data
         .map { preferences -> preferences[PreferencesKeys.IS_AUTO_BRIGHTNESS] ?: true }
+
+    /**
+     * A flow that emits the saved min auto-brightness level whenever it changes.
+     */
+    val autoBrightnessMinFlow: Flow<Float> = context.dataStore.data
+        .map { preferences -> preferences[PreferencesKeys.AUTO_BRIGHTNESS_MIN] ?: 0.1f }
+
+    /**
+     * A flow that emits the saved max auto-brightness level whenever it changes.
+     */
+    val autoBrightnessMaxFlow: Flow<Float> = context.dataStore.data
+        .map { preferences -> preferences[PreferencesKeys.AUTO_BRIGHTNESS_MAX] ?: 1.0f }
 
 
     /**
@@ -98,6 +112,28 @@ class AppPreferences(
     suspend fun saveIsAutoBrightness(isAutoBrightness: Boolean) {
         context.dataStore.edit { settings ->
             settings[PreferencesKeys.IS_AUTO_BRIGHTNESS] = isAutoBrightness
+        }
+    }
+
+    /**
+     * Persists the min auto-brightness level.
+     *
+     * @param min The min auto-brightness level to save.
+     */
+    suspend fun saveAutoBrightnessMin(min: Float) {
+        context.dataStore.edit { settings ->
+            settings[PreferencesKeys.AUTO_BRIGHTNESS_MIN] = min
+        }
+    }
+
+    /**
+     * Persists the max auto-brightness level.
+     *
+     * @param max The max auto-brightness level to save.
+     */
+    suspend fun saveAutoBrightnessMax(max: Float) {
+        context.dataStore.edit { settings ->
+            settings[PreferencesKeys.AUTO_BRIGHTNESS_MAX] = max
         }
     }
 }

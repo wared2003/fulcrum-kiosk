@@ -54,7 +54,6 @@ fun SecurityScreen(state: SettingsState, onEvent: (SettingsEvent) -> Unit) {
                 title = "Kiosk Mode Lock",
                 subtitle = if (state.isLockOn) "Status: On (Secured)" else "Status: Off (unsecured)",
                 titleColor = if (!state.isLockOn) MaterialTheme.colorScheme.error else Color.Unspecified,
-                onClick = { onEvent(SettingsEvent.OnClickLockMode) },
                 trailingContent = {
                     Switch(
                         checked = state.isLockOn,

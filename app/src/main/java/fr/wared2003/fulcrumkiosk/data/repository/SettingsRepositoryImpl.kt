@@ -27,7 +27,9 @@ class SettingsRepositoryImpl(
         vaultManager.isKioskPinSetFlow,
         appPreferences.isLockOnState,
         appPreferences.brightnessFlow,
-        appPreferences.isAutoBrightnessFlow
+        appPreferences.isAutoBrightnessFlow,
+        appPreferences.autoBrightnessMinFlow,
+        appPreferences.autoBrightnessMaxFlow
     ) { values ->
         val url = values[0] as? String
         val isDefault = values[1] as Boolean
@@ -35,6 +37,8 @@ class SettingsRepositoryImpl(
         val isLockOn = values[3] as Boolean
         val brightness = values[4] as Float
         val isAutoBrightness = values[5] as Boolean
+        val autoBrightnessMin = values[6] as Float
+        val autoBrightnessMax = values[7] as Float
 
         Log.d("KioskDebug", "Source isLockOn: $isLockOn")
         KioskConfig(
@@ -43,7 +47,9 @@ class SettingsRepositoryImpl(
             isDefaultAdminPin = isDefault,
             isKioskPinSet = isKioskSet,
             brightness = brightness,
-            isAutoBrightness = isAutoBrightness
+            isAutoBrightness = isAutoBrightness,
+            autoBrightnessMin = autoBrightnessMin,
+            autoBrightnessMax = autoBrightnessMax
         )
     }
 
@@ -113,5 +119,19 @@ class SettingsRepositoryImpl(
      */
     override suspend fun saveIsAutoBrightness(isAutoBrightness: Boolean) {
         appPreferences.saveIsAutoBrightness(isAutoBrightness)
+    }
+
+    /**
+     * Persists the min auto-brightness level.
+     */
+    override suspend fun saveAutoBrightnessMin(min: Float) {
+        appPreferences.saveAutoBrightnessMin(min)
+    }
+
+    /**
+     * Persists the max auto-brightness level.
+     */
+    override suspend fun saveAutoBrightnessMax(max: Float) {
+        appPreferences.saveAutoBrightnessMax(max)
     }
 }

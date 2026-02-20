@@ -57,4 +57,14 @@ interface SettingsRepository {
      * Persists the auto-brightness setting.
      */
     suspend fun saveIsAutoBrightness(isAutoBrightness: Boolean)
+
+    /**
+     * Persists the min auto-brightness level.
+     */
+    suspend fun saveAutoBrightnessMin(min: Float)
+
+    /**
+     * Persists the max auto-brightness level.
+     */
+    suspend fun saveAutoBrightnessMax(max: Float)
 }

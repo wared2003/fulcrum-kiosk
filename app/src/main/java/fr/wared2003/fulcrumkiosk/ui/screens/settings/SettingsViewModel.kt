@@ -21,7 +21,9 @@ class SettingsViewModel(
     private val clearKioskPinUseCase: ClearKioskPinUseCase,
     private val saveLockModeUseCase: SaveLockModeUseCase,
     private val saveBrightnessUseCase: SaveBrightnessUseCase,
-    private val saveAutoBrightnessUseCase: SaveAutoBrightnessUseCase
+    private val saveAutoBrightnessUseCase: SaveAutoBrightnessUseCase,
+    private val saveAutoBrightnessMinUseCase: SaveAutoBrightnessMinUseCase,
+    private val saveAutoBrightnessMaxUseCase: SaveAutoBrightnessMaxUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SettingsState())
@@ -37,7 +39,9 @@ class SettingsViewModel(
                         isKioskPinSet = config.isKioskPinSet,
                         isLockOn = config.isLockOn,
                         brightness = config.brightness,
-                        isAutoBrightness = config.isAutoBrightness
+                        isAutoBrightness = config.isAutoBrightness,
+                        autoBrightnessMin = config.autoBrightnessMin,
+                        autoBrightnessMax = config.autoBrightnessMax
                     )
                 }
             }
@@ -102,6 +106,16 @@ class SettingsViewModel(
             is SettingsEvent.OnAutoBrightnessChanged -> {
                 viewModelScope.launch {
                     saveAutoBrightnessUseCase(event.isAuto)
+                }
+            }
+            is SettingsEvent.OnAutoBrightnessMinChanged -> {
+                viewModelScope.launch {
+                    saveAutoBrightnessMinUseCase(event.newMin)
+                }
+            }
+            is SettingsEvent.OnAutoBrightnessMaxChanged -> {
+                viewModelScope.launch {
+                    saveAutoBrightnessMaxUseCase(event.newMax)
                 }
             }
         }

@@ -10,6 +10,8 @@ package fr.wared2003.fulcrumkiosk.domain.model
  * @property isKioskPinSet Indicates if a specific PIN has been configured to exit the Kiosk mode.
  * @property brightness The screen brightness level (0f to 1f).
  * @property isAutoBrightness Indicates if auto brightness is enabled.
+ * @property autoBrightnessMin The minimum brightness for auto-mode.
+ * @property autoBrightnessMax The maximum brightness for auto-mode.
  */
 data class KioskConfig(
     val url: String?,
@@ -17,5 +19,7 @@ data class KioskConfig(
     val isKioskPinSet: Boolean,
     val isLockOn: Boolean,
     val brightness: Float,
-    val isAutoBrightness: Boolean
+    val isAutoBrightness: Boolean,
+    val autoBrightnessMin: Float,
+    val autoBrightnessMax: Float
 )
