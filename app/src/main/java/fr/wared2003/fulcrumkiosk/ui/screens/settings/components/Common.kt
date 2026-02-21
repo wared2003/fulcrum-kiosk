@@ -77,13 +77,14 @@ fun SettingsItem(
     subtitle: String,
     onClick: (() -> Unit)? = null,
     titleColor: Color = MaterialTheme.colorScheme.onSurface,
-    trailingContent: @Composable (() -> Unit)? = null
+    trailingContent: @Composable (() -> Unit)? = null,
+    disabled: Boolean = false
 ) {
     val isClickable = onClick != null
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .alpha(if (isClickable || trailingContent != null) 1f else 0.6f),
+            .alpha(if (!disabled) 1f else 0.6f),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = if (isClickable) 2.dp else 0.dp),
         shape = RoundedCornerShape(20.dp)

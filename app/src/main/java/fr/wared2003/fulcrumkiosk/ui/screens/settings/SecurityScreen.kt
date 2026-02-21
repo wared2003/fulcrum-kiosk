@@ -73,16 +73,34 @@ fun SecurityScreen(state: SettingsState, onEvent: (SettingsEvent) -> Unit) {
         }
 
         item {
+            val isAvailable = state.isDeviceOwner
+
             SettingsItem(
                 icon = Icons.Default.Lock,
                 title = "Dim Lock",
-                subtitle = if (state.isDimLockEnabled) "Overrides dim to lock the device" else "Dim will only turn off the screen",
+                subtitle = when {
+                    !isAvailable -> "This feature requires Device Owner mode"
+                    state.isDimLockEnabled -> "Overrides dim to lock the device"
+                    else -> "Dim will only turn off the screen"
+                },
+                disabled = !isAvailable,
                 trailingContent = {
                     Switch(
                         checked = state.isDimLockEnabled,
-                        onCheckedChange = { onEvent(SettingsEvent.OnIsDimLockEnabledChanged(it)) }
+                        onCheckedChange = { onEvent(SettingsEvent.OnIsDimLockEnabledChanged(it)) },
+                        enabled = isAvailable
                     )
                 }
+            )
+        }
+
+        item {
+            SettingsItem(
+                icon = Icons.Default.AdminPanelSettings,
+                title = "Device Owner",
+                disabled = !state.isDeviceOwner,
+                subtitle = if (state.isDeviceOwner) "Status: Active" else "Status: Inactive",
+                onClick = if (state.isDeviceOwner) { { onEvent(SettingsEvent.OnDisableDeviceOwnerClicked) } } else null
             )
         }
 

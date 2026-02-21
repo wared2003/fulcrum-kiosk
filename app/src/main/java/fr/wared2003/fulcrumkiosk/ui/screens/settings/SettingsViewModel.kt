@@ -28,7 +28,9 @@ class SettingsViewModel(
     private val savePowerSavingActionUseCase: SavePowerSavingActionUseCase,
     private val savePowerSavingDimValueUseCase: SavePowerSavingDimValueUseCase,
     private val saveIsDimLockEnabledUseCase: SaveIsDimLockEnabledUseCase,
-    private val saveLaunchOnBootUseCase: SaveLaunchOnBootUseCase
+    private val saveLaunchOnBootUseCase: SaveLaunchOnBootUseCase,
+    private val isDeviceOwnerUseCase: IsDeviceOwnerUseCase,
+    private val disableDeviceOwnerUseCase: DisableDeviceOwnerUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SettingsState())
@@ -51,7 +53,8 @@ class SettingsViewModel(
                         powerSavingAction = config.powerSavingAction,
                         powerSavingDimValue = config.powerSavingDimValue,
                         isDimLockEnabled = config.isDimLockEnabled,
-                        launchOnBoot = config.launchOnBoot
+                        launchOnBoot = config.launchOnBoot,
+                        isDeviceOwner = isDeviceOwnerUseCase()
                     )
                 }
             }
@@ -157,6 +160,10 @@ class SettingsViewModel(
                     saveLaunchOnBootUseCase(event.isEnabled)
                 }
             }
+
+            is SettingsEvent.OnDisableDeviceOwnerClicked -> {
+                disableDeviceOwnerMode()
+            }
         }
     }
 
@@ -225,6 +232,13 @@ class SettingsViewModel(
         viewModelScope.launch {
             val isLockOn = !_state.value.isLockOn
             saveLockModeUseCase(isLockOn)
+        }
+    }
+
+    private fun disableDeviceOwnerMode(){
+        viewModelScope.launch {
+            disableDeviceOwnerUseCase()
+        _state.update { it.copy(isDeviceOwner = false) }
         }
     }
 }

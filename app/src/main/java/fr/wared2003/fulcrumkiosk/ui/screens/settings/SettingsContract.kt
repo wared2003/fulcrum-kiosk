@@ -33,7 +33,8 @@ data class SettingsState(
     val isDimLockEnabled: Boolean = false,
 
     // General
-    val launchOnBoot: Boolean = false
+    val launchOnBoot: Boolean = false,
+    val isDeviceOwner: Boolean = false
 )
 
 /**
@@ -80,4 +81,7 @@ sealed interface SettingsEvent {
 
     // General Events
     data class OnLaunchOnBootChanged(val isEnabled: Boolean) : SettingsEvent
+
+    // Security Events
+    object OnDisableDeviceOwnerClicked : SettingsEvent
 }
